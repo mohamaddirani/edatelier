@@ -4,6 +4,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import DressCard from '@/components/DressCard';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import {
   Select,
   SelectContent,
@@ -11,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Sparkles, Filter, X } from 'lucide-react';
 
 interface Dress {
   id: string;
@@ -41,6 +43,7 @@ export default function Shop() {
   const [selectedColor, setSelectedColor] = useState('all');
   const [selectedCondition, setSelectedCondition] = useState<string | null>(null);
   const [availableColors, setAvailableColors] = useState<string[]>([]);
+  const [showFilters, setShowFilters] = useState(false);
 
   useEffect(() => {
     fetchDresses();
@@ -75,17 +78,14 @@ export default function Shop() {
         .select('*')
         .order('created_at', { ascending: false });
 
-      // Apply category filter
       if (selectedCategory !== 'all') {
         query = query.eq('category', selectedCategory);
       }
 
-      // Apply color filter
       if (selectedColor !== 'all') {
         query = query.ilike('color', selectedColor);
       }
 
-      // Apply condition filter
       if (selectedCondition) {
         query = query.eq('condition', selectedCondition);
       }
@@ -107,30 +107,93 @@ export default function Shop() {
     setSelectedCondition(null);
   };
 
+  const hasActiveFilters = selectedCategory !== 'all' || selectedColor !== 'all' || selectedCondition !== null;
+
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-background">
       <Navbar />
 
-      <main className="flex-1 pt-24 pb-12">
+      {/* Hero Section */}
+      <section className="relative pt-32 pb-16 px-4 bg-gradient-to-br from-primary/5 via-background to-secondary/5">
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute -top-1/2 -right-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
+          <div className="absolute -bottom-1/2 -left-1/4 w-96 h-96 bg-secondary/10 rounded-full blur-3xl" />
+        </div>
+        <div className="container mx-auto text-center relative z-10 max-w-3xl">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full mb-6 animate-fade-in">
+            <Sparkles className="w-4 h-4 text-primary" />
+            <span className="text-sm font-medium text-primary">Complete Collection</span>
+          </div>
+          <h1 className="text-5xl md:text-6xl font-bold mb-4 animate-fade-in">
+            Discover Elegance
+          </h1>
+          <p className="text-lg text-muted-foreground animate-fade-in">
+            Browse our curated collection of designer pieces
+          </p>
+        </div>
+      </section>
+
+      <main className="flex-1 pb-12">
         <div className="container mx-auto px-4">
-          <div className="mb-8">
-            <h1 className="text-4xl md:text-5xl font-bold mb-2">Shop Collection</h1>
-            <p className="text-muted-foreground">
-              Browse our complete collection of elegant dresses
-            </p>
+          {/* Category Tabs - Mobile & Desktop */}
+          <div className="sticky top-20 z-40 bg-background/95 backdrop-blur-sm py-4 border-b border-border mb-8">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-bold">All Products</h2>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowFilters(!showFilters)}
+                className="lg:hidden"
+              >
+                <Filter className="w-4 h-4 mr-2" />
+                Filters
+                {hasActiveFilters && (
+                  <Badge className="ml-2 h-5 w-5 rounded-full p-0 flex items-center justify-center">
+                    {[selectedCategory !== 'all', selectedColor !== 'all', selectedCondition].filter(Boolean).length}
+                  </Badge>
+                )}
+              </Button>
+            </div>
+            
+            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+              {categories.map((category) => (
+                <Button
+                  key={category.id}
+                  variant={selectedCategory === category.id ? 'default' : 'outline'}
+                  onClick={() => setSelectedCategory(category.id)}
+                  className="whitespace-nowrap transition-all hover-scale"
+                  size="sm"
+                >
+                  {category.label}
+                </Button>
+              ))}
+            </div>
           </div>
 
           <div className="grid lg:grid-cols-4 gap-8">
-            {/* Filters Sidebar */}
-            <div className="lg:col-span-1">
-              <div className="bg-card rounded-lg border border-border p-6 sticky top-24">
-                <h2 className="text-xl font-semibold mb-6">Filters</h2>
+            {/* Filters Sidebar - Desktop */}
+            <div className={`lg:col-span-1 ${showFilters ? 'block' : 'hidden lg:block'}`}>
+              <div className="bg-card rounded-xl border border-border p-6 sticky top-40 shadow-sm animate-fade-in">
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-lg font-semibold">Filters</h3>
+                  {hasActiveFilters && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={clearFilters}
+                      className="text-xs"
+                    >
+                      <X className="w-3 h-3 mr-1" />
+                      Clear
+                    </Button>
+                  )}
+                </div>
 
                 {/* Color Filter */}
                 <div className="mb-6">
-                  <h3 className="font-semibold mb-3">Filter by Color</h3>
+                  <label className="text-sm font-medium mb-3 block">Color</label>
                   <Select value={selectedColor} onValueChange={setSelectedColor}>
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full">
                       <SelectValue placeholder="All Colors" />
                     </SelectTrigger>
                     <SelectContent>
@@ -146,15 +209,15 @@ export default function Shop() {
 
                 {/* Condition Filter */}
                 <div className="mb-6">
-                  <h3 className="font-semibold mb-3">Condition</h3>
-                  <div className="flex gap-2">
+                  <label className="text-sm font-medium mb-3 block">Condition</label>
+                  <div className="space-y-2">
                     <Button
                       variant={selectedCondition === 'new' ? 'default' : 'outline'}
                       size="sm"
                       onClick={() =>
                         setSelectedCondition(selectedCondition === 'new' ? null : 'new')
                       }
-                      className="flex-1"
+                      className="w-full transition-all"
                     >
                       New
                     </Button>
@@ -164,69 +227,59 @@ export default function Shop() {
                       onClick={() =>
                         setSelectedCondition(selectedCondition === 'used' ? null : 'used')
                       }
-                      className="flex-1"
+                      className="w-full transition-all"
                     >
                       Used
                     </Button>
                   </div>
                 </div>
-
-                {/* Clear Filters */}
-                <Button
-                  variant="outline"
-                  onClick={clearFilters}
-                  className="w-full"
-                >
-                  Clear Filters
-                </Button>
               </div>
             </div>
 
             {/* Products Grid */}
             <div className="lg:col-span-3">
-              {/* Category Tabs */}
-              <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
-                {categories.map((category) => (
-                  <Button
-                    key={category.id}
-                    variant={selectedCategory === category.id ? 'default' : 'outline'}
-                    onClick={() => setSelectedCategory(category.id)}
-                    className="whitespace-nowrap"
-                  >
-                    {category.label}
-                  </Button>
-                ))}
-              </div>
-
-              <h2 className="text-2xl font-semibold mb-6">All Products</h2>
-
               {loading ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {[1, 2, 3, 4, 5, 6].map((i) => (
-                    <div key={i} className="h-[400px] bg-muted animate-pulse rounded-lg" />
+                    <div key={i} className="h-[400px] bg-muted/50 animate-pulse rounded-xl" />
                   ))}
                 </div>
               ) : dresses.length === 0 ? (
-                <div className="text-center py-20">
-                  <p className="text-muted-foreground text-lg">
-                    No dresses found with the selected filters.
+                <div className="text-center py-20 animate-fade-in">
+                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-muted mb-4">
+                    <Filter className="w-8 h-8 text-muted-foreground" />
+                  </div>
+                  <p className="text-muted-foreground text-lg mb-4">
+                    No dresses found with the selected filters
                   </p>
-                  <Button onClick={clearFilters} variant="outline" className="mt-4">
+                  <Button onClick={clearFilters} variant="outline">
                     Clear Filters
                   </Button>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {dresses.map((dress) => (
-                    <DressCard
-                      key={dress.id}
-                      id={dress.id}
-                      name={dress.name}
-                      image_url={dress.image_url}
-                      is_available={dress.is_available}
-                    />
-                  ))}
-                </div>
+                <>
+                  <div className="flex items-center justify-between mb-6">
+                    <p className="text-sm text-muted-foreground">
+                      Showing {dresses.length} {dresses.length === 1 ? 'item' : 'items'}
+                    </p>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {dresses.map((dress, index) => (
+                      <div
+                        key={dress.id}
+                        className="animate-fade-in"
+                        style={{ animationDelay: `${index * 0.05}s` }}
+                      >
+                        <DressCard
+                          id={dress.id}
+                          name={dress.name}
+                          image_url={dress.image_url}
+                          is_available={dress.is_available}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </>
               )}
             </div>
           </div>
