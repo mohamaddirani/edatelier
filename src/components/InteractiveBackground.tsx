@@ -12,6 +12,21 @@ export default function InteractiveBackground() {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
+    // Get computed CSS variables
+    const getColor = (variable: string, alpha: number = 1) => {
+      const root = document.documentElement;
+      const value = getComputedStyle(root).getPropertyValue(variable).trim();
+      // value will be like "222.2 47.4% 11.2%" (HSL values)
+      const [h, s, l] = value.split(' ');
+      return `hsla(${h}, ${s}, ${l}, ${alpha})`;
+    };
+
+    const primaryColor = getColor('--primary', 0.15);
+    const accentColor = getColor('--accent', 0.08);
+    const secondaryColor = getColor('--secondary', 0.03);
+    const accentColor2 = getColor('--accent', 0.1);
+    const primaryColor2 = getColor('--primary', 0.05);
+
     // Set canvas size
     const resizeCanvas = () => {
       canvas.width = window.innerWidth;
@@ -51,10 +66,10 @@ export default function InteractiveBackground() {
       );
 
       // Use theme colors for gradient
-      gradient.addColorStop(0, 'hsla(var(--primary) / 0.15)');
-      gradient.addColorStop(0.3, 'hsla(var(--accent) / 0.08)');
-      gradient.addColorStop(0.6, 'hsla(var(--secondary) / 0.03)');
-      gradient.addColorStop(1, 'hsla(var(--background) / 0)');
+      gradient.addColorStop(0, primaryColor);
+      gradient.addColorStop(0.3, accentColor);
+      gradient.addColorStop(0.6, secondaryColor);
+      gradient.addColorStop(1, 'transparent');
 
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -69,9 +84,9 @@ export default function InteractiveBackground() {
         Math.max(canvas.width, canvas.height) * 0.5
       );
 
-      gradient2.addColorStop(0, 'hsla(var(--accent) / 0.1)');
-      gradient2.addColorStop(0.5, 'hsla(var(--primary) / 0.05)');
-      gradient2.addColorStop(1, 'hsla(var(--background) / 0)');
+      gradient2.addColorStop(0, accentColor2);
+      gradient2.addColorStop(0.5, primaryColor2);
+      gradient2.addColorStop(1, 'transparent');
 
       ctx.fillStyle = gradient2;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
