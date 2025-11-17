@@ -85,9 +85,9 @@ export default function Index() {
           </div>
 
           {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory">
               {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div key={i} className="h-[500px] bg-muted animate-pulse rounded-lg" />
+                <div key={i} className="flex-shrink-0 w-80 h-[500px] bg-muted animate-pulse rounded-lg snap-center" />
               ))}
             </div>
           ) : featuredDresses.length === 0 ? (
@@ -97,15 +97,16 @@ export default function Index() {
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory">
               {featuredDresses.map((dress) => (
-                <DressCard 
-                  key={dress.id} 
-                  id={dress.id}
-                  name={dress.name}
-                  image_url={dress.image_url}
-                  is_available={dress.is_available}
-                />
+                <div key={dress.id} className="flex-shrink-0 w-80 snap-center">
+                  <DressCard 
+                    id={dress.id}
+                    name={dress.name}
+                    image_url={dress.image_url}
+                    is_available={dress.is_available}
+                  />
+                </div>
               ))}
             </div>
           )}

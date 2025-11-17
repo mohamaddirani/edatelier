@@ -114,86 +114,80 @@ export default function Shop() {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="relative pt-32 pb-16 px-4 bg-gradient-to-br from-primary/5 via-background to-secondary/5">
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute -top-1/2 -right-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
-          <div className="absolute -bottom-1/2 -left-1/4 w-96 h-96 bg-secondary/10 rounded-full blur-3xl" />
-        </div>
+      <section className="relative pt-32 pb-12 px-4 bg-gradient-to-br from-primary/5 via-background to-secondary/5">
         <div className="container mx-auto text-center relative z-10 max-w-3xl">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full mb-6 animate-fade-in">
-            <Sparkles className="w-4 h-4 text-primary" />
-            <span className="text-sm font-medium text-primary">Complete Collection</span>
-          </div>
           <h1 className="text-5xl md:text-6xl font-bold mb-4 animate-fade-in">
-            Discover Elegance
+            Shop Collection
           </h1>
           <p className="text-lg text-muted-foreground animate-fade-in">
-            Browse our curated collection of designer pieces
+            Explore our complete designer collection
           </p>
         </div>
       </section>
 
       <main className="flex-1 pb-12">
         <div className="container mx-auto px-4">
-          {/* Category Tabs - Mobile & Desktop */}
-          <div className="sticky top-20 z-40 bg-background/95 backdrop-blur-sm py-4 border-b border-border mb-8">
-            <div className="flex items-center justify-between mb-4">
+          {/* Filters Section */}
+          <div className="mb-8">
+            {/* Mobile Filter Toggle */}
+            <div className="flex items-center justify-between mb-6 lg:hidden">
               <h2 className="text-2xl font-bold">All Products</h2>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setShowFilters(!showFilters)}
-                className="lg:hidden"
               >
                 <Filter className="w-4 h-4 mr-2" />
                 Filters
                 {hasActiveFilters && (
-                  <Badge className="ml-2 h-5 w-5 rounded-full p-0 flex items-center justify-center">
+                  <Badge className="ml-2 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs">
                     {[selectedCategory !== 'all', selectedColor !== 'all', selectedCondition].filter(Boolean).length}
                   </Badge>
                 )}
               </Button>
             </div>
-            
-            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-              {categories.map((category) => (
-                <Button
-                  key={category.id}
-                  variant={selectedCategory === category.id ? 'default' : 'outline'}
-                  onClick={() => setSelectedCategory(category.id)}
-                  className="whitespace-nowrap transition-all hover-scale"
-                  size="sm"
-                >
-                  {category.label}
-                </Button>
-              ))}
-            </div>
-          </div>
 
-          <div className="grid lg:grid-cols-4 gap-8">
-            {/* Filters Sidebar - Desktop */}
-            <div className={`lg:col-span-1 ${showFilters ? 'block' : 'hidden lg:block'}`}>
-              <div className="bg-card rounded-xl border border-border p-6 sticky top-40 shadow-sm animate-fade-in">
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-lg font-semibold">Filters</h3>
+            {/* Filters Panel */}
+            <div className={`bg-card/50 backdrop-blur-sm rounded-2xl border border-border/50 p-6 mb-6 ${showFilters ? 'block' : 'hidden lg:block'}`}>
+              {/* Category Pills */}
+              <div className="mb-6">
+                <div className="flex items-center justify-between mb-4">
+                  <label className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Categories</label>
                   {hasActiveFilters && (
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={clearFilters}
-                      className="text-xs"
+                      className="text-xs h-8"
                     >
                       <X className="w-3 h-3 mr-1" />
-                      Clear
+                      Clear All
                     </Button>
                   )}
                 </div>
+                <div className="flex flex-wrap gap-2">
+                  {categories.map((category) => (
+                    <button
+                      key={category.id}
+                      onClick={() => setSelectedCategory(category.id)}
+                      className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                        selectedCategory === category.id
+                          ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20'
+                          : 'bg-muted/50 text-foreground hover:bg-muted'
+                      }`}
+                    >
+                      {category.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
 
+              <div className="grid md:grid-cols-2 gap-6">
                 {/* Color Filter */}
-                <div className="mb-6">
-                  <label className="text-sm font-medium mb-3 block">Color</label>
+                <div>
+                  <label className="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-3 block">Color</label>
                   <Select value={selectedColor} onValueChange={setSelectedColor}>
-                    <SelectTrigger className="w-full">
+                    <SelectTrigger className="w-full h-11 bg-background border-border/50">
                       <SelectValue placeholder="All Colors" />
                     </SelectTrigger>
                     <SelectContent>
@@ -208,80 +202,84 @@ export default function Shop() {
                 </div>
 
                 {/* Condition Filter */}
-                <div className="mb-6">
-                  <label className="text-sm font-medium mb-3 block">Condition</label>
-                  <div className="space-y-2">
-                    <Button
-                      variant={selectedCondition === 'new' ? 'default' : 'outline'}
-                      size="sm"
+                <div>
+                  <label className="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-3 block">Condition</label>
+                  <div className="flex gap-2">
+                    <button
                       onClick={() =>
                         setSelectedCondition(selectedCondition === 'new' ? null : 'new')
                       }
-                      className="w-full transition-all"
+                      className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                        selectedCondition === 'new'
+                          ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20'
+                          : 'bg-muted/50 text-foreground hover:bg-muted'
+                      }`}
                     >
                       New
-                    </Button>
-                    <Button
-                      variant={selectedCondition === 'used' ? 'default' : 'outline'}
-                      size="sm"
+                    </button>
+                    <button
                       onClick={() =>
                         setSelectedCondition(selectedCondition === 'used' ? null : 'used')
                       }
-                      className="w-full transition-all"
+                      className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                        selectedCondition === 'used'
+                          ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20'
+                          : 'bg-muted/50 text-foreground hover:bg-muted'
+                      }`}
                     >
                       Used
-                    </Button>
+                    </button>
                   </div>
                 </div>
               </div>
             </div>
+          </div>
 
-            {/* Products Grid */}
-            <div className="lg:col-span-3">
-              {loading ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {[1, 2, 3, 4, 5, 6].map((i) => (
-                    <div key={i} className="h-[400px] bg-muted/50 animate-pulse rounded-xl" />
+          {/* Products Grid */}
+          <div>
+            {loading ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+                  <div key={i} className="h-[400px] bg-muted/50 animate-pulse rounded-xl" />
+                ))}
+              </div>
+            ) : dresses.length === 0 ? (
+              <div className="text-center py-20 animate-fade-in">
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-muted mb-4">
+                  <Filter className="w-8 h-8 text-muted-foreground" />
+                </div>
+                <p className="text-muted-foreground text-lg mb-4">
+                  No dresses found with the selected filters
+                </p>
+                <Button onClick={clearFilters} variant="outline">
+                  Clear Filters
+                </Button>
+              </div>
+            ) : (
+              <>
+                <div className="flex items-center justify-between mb-6">
+                  <p className="text-sm text-muted-foreground">
+                    Showing {dresses.length} {dresses.length === 1 ? 'item' : 'items'}
+                  </p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {dresses.map((dress, index) => (
+                    <div
+                      key={dress.id}
+                      className="animate-fade-in"
+                      style={{ animationDelay: `${index * 0.05}s` }}
+                    >
+                      <DressCard
+                        id={dress.id}
+                        name={dress.name}
+                        image_url={dress.image_url}
+                        is_available={dress.is_available}
+                      />
+                    </div>
                   ))}
                 </div>
-              ) : dresses.length === 0 ? (
-                <div className="text-center py-20 animate-fade-in">
-                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-muted mb-4">
-                    <Filter className="w-8 h-8 text-muted-foreground" />
-                  </div>
-                  <p className="text-muted-foreground text-lg mb-4">
-                    No dresses found with the selected filters
-                  </p>
-                  <Button onClick={clearFilters} variant="outline">
-                    Clear Filters
-                  </Button>
-                </div>
-              ) : (
-                <>
-                  <div className="flex items-center justify-between mb-6">
-                    <p className="text-sm text-muted-foreground">
-                      Showing {dresses.length} {dresses.length === 1 ? 'item' : 'items'}
-                    </p>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {dresses.map((dress, index) => (
-                      <div
-                        key={dress.id}
-                        className="animate-fade-in"
-                        style={{ animationDelay: `${index * 0.05}s` }}
-                      >
-                        <DressCard
-                          id={dress.id}
-                          name={dress.name}
-                          image_url={dress.image_url}
-                          is_available={dress.is_available}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </>
-              )}
-            </div>
+              </>
+            )}
           </div>
         </div>
       </main>
