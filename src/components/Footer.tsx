@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { z } from 'zod';
-import { Instagram, Facebook, MessageCircle } from 'lucide-react';
+import { Instagram, Facebook, MessageCircle, Phone, MapPin } from 'lucide-react';
 
 const emailSchema = z.string().email({ message: "Please enter a valid email address" });
 
@@ -63,7 +63,7 @@ export default function Footer() {
   return (
     <footer className="bg-card border-t border-border mt-20">
       <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
           <div>
             <h3 className="text-2xl font-bold mb-1 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
               ED ATELIER
@@ -97,6 +97,38 @@ export default function Footer() {
                 className="w-10 h-10 rounded-full bg-primary/10 hover:bg-primary flex items-center justify-center transition-colors group"
               >
                 <MessageCircle className="w-5 h-5 text-primary group-hover:text-primary-foreground transition-colors" />
+              </a>
+            </div>
+          </div>
+
+          <div>
+            <h4 className="font-semibold mb-4">Contact Us</h4>
+            <div className="space-y-3">
+              <a
+                href="tel:+9613836748"
+                className="flex items-center gap-3 text-muted-foreground hover:text-primary transition-colors group"
+              >
+                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary transition-colors">
+                  <Phone className="w-5 h-5 text-primary group-hover:text-primary-foreground transition-colors" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-foreground">Call Us</p>
+                  <p className="text-sm">+961 3836748</p>
+                </div>
+              </a>
+              <a
+                href="https://www.google.co.uk/maps/place/EDA+by+Enaam+Dirani/@33.3958084,35.3329162,17z/data=!3m1!4b1!4m6!3m5!1s0x151e8da843d290b9:0x6d9509e0d45138e0!8m2!3d33.3958084!4d35.3329162!16s%2Fg%2F11mkvyv7sn?entry=ttu&g_ep=EgoyMDI1MTExNi4wIKXMDSoASAFQAw%3D%3D"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 text-muted-foreground hover:text-primary transition-colors group"
+              >
+                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary transition-colors">
+                  <MapPin className="w-5 h-5 text-primary group-hover:text-primary-foreground transition-colors" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-foreground">Visit Us</p>
+                  <p className="text-sm">View Location</p>
+                </div>
               </a>
             </div>
           </div>
