@@ -17,6 +17,8 @@ const dressSchema = z.object({
   size: z.string().trim().min(1, { message: "Size is required" }),
   color: z.string().trim().min(1, { message: "Color is required" }),
   price_per_day: z.number().min(0, { message: "Price must be positive" }).optional(),
+  condition: z.enum(['new', 'used'], { message: "Please select a condition" }),
+  category: z.string().trim().min(1, { message: "Category is required" }),
 });
 
 interface Dress {
@@ -28,6 +30,8 @@ interface Dress {
   price_per_day: number;
   image_url: string;
   is_available: boolean;
+  condition: string | null;
+  category: string | null;
 }
 
 export default function AdminDashboard() {
@@ -52,6 +56,8 @@ export default function AdminDashboard() {
     size: '',
     color: '',
     price_per_day: '',
+    condition: 'new' as 'new' | 'used',
+    category: 'dress',
   });
 
   useEffect(() => {
@@ -171,6 +177,8 @@ export default function AdminDashboard() {
             size: validation.data.size,
             color: validation.data.color,
             price_per_day: validation.data.price_per_day,
+            condition: validation.data.condition,
+            category: validation.data.category,
             image_url: primaryImageUrl,
           })
           .eq('id', editingDressId);
@@ -223,6 +231,8 @@ export default function AdminDashboard() {
             size: validation.data.size,
             color: validation.data.color,
             price_per_day: validation.data.price_per_day,
+            condition: validation.data.condition,
+            category: validation.data.category,
             image_url: imageUrls[primaryImageIndex],
           }])
           .select()
@@ -257,6 +267,8 @@ export default function AdminDashboard() {
         size: '',
         color: '',
         price_per_day: '',
+        condition: 'new',
+        category: 'dress',
       });
       setImageFiles([]);
       setPrimaryImageIndex(0);
@@ -283,6 +295,8 @@ export default function AdminDashboard() {
       size: dress.size || '',
       color: dress.color || '',
       price_per_day: dress.price_per_day?.toString() || '',
+      condition: (dress.condition as 'new' | 'used') || 'new',
+      category: dress.category || 'dress',
     });
 
     // Fetch existing images
@@ -333,6 +347,8 @@ export default function AdminDashboard() {
       size: '',
       color: '',
       price_per_day: '',
+      condition: 'new',
+      category: 'dress',
     });
     setImageFiles([]);
     setExistingImages([]);
@@ -423,6 +439,35 @@ export default function AdminDashboard() {
                   value={formData.price_per_day}
                   onChange={(e) => setFormData({ ...formData, price_per_day: e.target.value })}
                 />
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Condition</label>
+                    <select
+                      value={formData.condition}
+                      onChange={(e) => setFormData({ ...formData, condition: e.target.value as 'new' | 'used' })}
+                      className="w-full h-10 px-3 rounded-md border border-input bg-background"
+                      required
+                    >
+                      <option value="new">New</option>
+                      <option value="used">Used</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Category</label>
+                    <select
+                      value={formData.category}
+                      onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                      className="w-full h-10 px-3 rounded-md border border-input bg-background"
+                      required
+                    >
+                      <option value="dress">Dress</option>
+                      <option value="white-dress">White Dress</option>
+                      <option value="classic-dress">Classic Dress</option>
+                      <option value="clutch">Clutch</option>
+                      <option value="scarf">Scarf</option>
+                    </select>
+                  </div>
+                </div>
                 <div>
                   <label className="block text-sm font-medium mb-2">
                     Dress Images

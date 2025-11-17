@@ -66,7 +66,7 @@ export default function Index() {
             Discover our curated collection of stunning designer dresses. 
             Rent the perfect gown for your unforgettable moments.
           </p>
-          <Button size="lg" className="shadow-elegant">
+          <Button size="lg" className="shadow-elegant" onClick={() => window.location.href = '/shop'}>
             Browse Collection
           </Button>
         </div>
