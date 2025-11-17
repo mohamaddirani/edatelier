@@ -38,6 +38,41 @@ export type Database = {
         }
         Relationships: []
       }
+      dress_images: {
+        Row: {
+          created_at: string
+          display_order: number
+          dress_id: string
+          id: string
+          image_url: string
+          is_primary: boolean
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number
+          dress_id: string
+          id?: string
+          image_url: string
+          is_primary?: boolean
+        }
+        Update: {
+          created_at?: string
+          display_order?: number
+          dress_id?: string
+          id?: string
+          image_url?: string
+          is_primary?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dress_images_dress_id_fkey"
+            columns: ["dress_id"]
+            isOneToOne: false
+            referencedRelation: "dresses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       dresses: {
         Row: {
           color: string | null
@@ -47,7 +82,7 @@ export type Database = {
           image_url: string | null
           is_available: boolean
           name: string
-          price_per_day: number
+          price_per_day: number | null
           size: string | null
           updated_at: string
         }
@@ -59,7 +94,7 @@ export type Database = {
           image_url?: string | null
           is_available?: boolean
           name: string
-          price_per_day: number
+          price_per_day?: number | null
           size?: string | null
           updated_at?: string
         }
@@ -71,7 +106,7 @@ export type Database = {
           image_url?: string | null
           is_available?: boolean
           name?: string
-          price_per_day?: number
+          price_per_day?: number | null
           size?: string | null
           updated_at?: string
         }

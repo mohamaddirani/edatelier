@@ -13,7 +13,7 @@ interface Dress {
   description: string;
   size: string;
   color: string;
-  price_per_day: number;
+  price_per_day: number | null;
   image_url: string;
   is_available: boolean;
   created_at: string;
