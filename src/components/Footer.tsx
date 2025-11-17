@@ -64,9 +64,10 @@ export default function Footer() {
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
           <div>
-            <h3 className="text-2xl font-bold mb-4 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              Elegance Rentals
+            <h3 className="text-2xl font-bold mb-1 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+              ED ATELIER
             </h3>
+            <p className="text-sm text-muted-foreground mb-4">by enaam dirani</p>
             <p className="text-muted-foreground mb-4">
               Discover exquisite designer dresses for every special occasion. 
               Your perfect dress awaits.
@@ -95,7 +96,7 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-border pt-8 text-center text-sm text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} Elegance Rentals. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} ED ATELIER. All rights reserved.</p>
         </div>
       </div>
     </footer>

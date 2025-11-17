@@ -11,9 +11,12 @@ export default function Navbar() {
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center space-x-2">
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              Elegance Rentals
-            </h1>
+            <div>
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                ED ATELIER
+              </h1>
+              <p className="text-xs text-muted-foreground">by enaam dirani</p>
+            </div>
           </Link>
 
           <div className="flex items-center space-x-4">

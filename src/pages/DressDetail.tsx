@@ -190,7 +190,7 @@ export default function DressDetail() {
               )}
             </div>
 
-            {dress.price_per_day && (
+            {dress.price_per_day && dress.price_per_day > 0 && (
               <div className="mb-6">
                 <p className="text-4xl font-bold text-primary">
                   ${dress.price_per_day}
