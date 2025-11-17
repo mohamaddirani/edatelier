@@ -199,7 +199,11 @@ export default function DressDetail() {
               </div>
             ) : null}
 
-            <Button size="lg" className="w-full">
+            <Button 
+              size="lg" 
+              className="w-full"
+              onClick={() => window.open(`https://api.whatsapp.com/send?phone=9613836748&text=Hello, I'm interested in renting: ${dress.name}`, '_blank')}
+            >
               Contact for Rental
             </Button>
           </div>

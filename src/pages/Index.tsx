@@ -97,17 +97,41 @@ export default function Index() {
               </p>
             </div>
           ) : (
-            <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory">
-              {featuredDresses.map((dress) => (
-                <div key={dress.id} className="flex-shrink-0 w-80 snap-center">
-                  <DressCard 
-                    id={dress.id}
-                    name={dress.name}
-                    image_url={dress.image_url}
-                    is_available={dress.is_available}
-                  />
-                </div>
-              ))}
+            <div className="relative group">
+              <button
+                onClick={() => {
+                  const container = document.getElementById('featured-scroll');
+                  if (container) container.scrollBy({ left: -350, behavior: 'smooth' });
+                }}
+                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-background/80 backdrop-blur-sm border-2 border-border rounded-full p-3 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-background"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+              <div id="featured-scroll" className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory">
+                {featuredDresses.map((dress) => (
+                  <div key={dress.id} className="flex-shrink-0 w-80 snap-center">
+                    <DressCard 
+                      id={dress.id}
+                      name={dress.name}
+                      image_url={dress.image_url}
+                      is_available={dress.is_available}
+                    />
+                  </div>
+                ))}
+              </div>
+              <button
+                onClick={() => {
+                  const container = document.getElementById('featured-scroll');
+                  if (container) container.scrollBy({ left: 350, behavior: 'smooth' });
+                }}
+                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-background/80 backdrop-blur-sm border-2 border-border rounded-full p-3 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-background"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
             </div>
           )}
         </div>

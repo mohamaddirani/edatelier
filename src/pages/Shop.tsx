@@ -147,33 +147,35 @@ export default function Shop() {
               </Button>
             </div>
 
-            {/* Filters Panel */}
-            <div className={`bg-card/50 backdrop-blur-sm rounded-2xl border border-border/50 p-6 mb-6 ${showFilters ? 'block' : 'hidden lg:block'}`}>
+          {/* Filters Panel */}
+            <div className={`bg-background rounded-xl border-2 border-border p-6 mb-6 shadow-sm ${showFilters ? 'block' : 'hidden lg:block'}`}>
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-lg font-bold">Filters</h3>
+                {hasActiveFilters && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={clearFilters}
+                    className="text-xs h-8"
+                  >
+                    <X className="w-3 h-3 mr-1" />
+                    Clear All
+                  </Button>
+                )}
+              </div>
+
               {/* Category Pills */}
               <div className="mb-6">
-                <div className="flex items-center justify-between mb-4">
-                  <label className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Categories</label>
-                  {hasActiveFilters && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={clearFilters}
-                      className="text-xs h-8"
-                    >
-                      <X className="w-3 h-3 mr-1" />
-                      Clear All
-                    </Button>
-                  )}
-                </div>
+                <label className="text-sm font-semibold mb-3 block">Category</label>
                 <div className="flex flex-wrap gap-2">
                   {categories.map((category) => (
                     <button
                       key={category.id}
                       onClick={() => setSelectedCategory(category.id)}
-                      className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                      className={`px-6 py-2.5 rounded-lg text-sm font-medium transition-all border-2 ${
                         selectedCategory === category.id
-                          ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20'
-                          : 'bg-muted/50 text-foreground hover:bg-muted'
+                          ? 'bg-primary text-primary-foreground border-primary'
+                          : 'bg-background text-foreground border-border hover:border-primary'
                       }`}
                     >
                       {category.label}
@@ -182,12 +184,12 @@ export default function Shop() {
                 </div>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-6">
+              <div className="space-y-6">
                 {/* Color Filter */}
                 <div>
-                  <label className="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-3 block">Color</label>
+                  <label className="text-sm font-semibold mb-3 block">Color</label>
                   <Select value={selectedColor} onValueChange={setSelectedColor}>
-                    <SelectTrigger className="w-full h-11 bg-background border-border/50">
+                    <SelectTrigger className="w-full h-12 bg-background border-2 border-border hover:border-primary transition-colors">
                       <SelectValue placeholder="All Colors" />
                     </SelectTrigger>
                     <SelectContent>
@@ -203,16 +205,16 @@ export default function Shop() {
 
                 {/* Condition Filter */}
                 <div>
-                  <label className="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-3 block">Condition</label>
-                  <div className="flex gap-2">
+                  <label className="text-sm font-semibold mb-3 block">Condition</label>
+                  <div className="flex gap-3">
                     <button
                       onClick={() =>
                         setSelectedCondition(selectedCondition === 'new' ? null : 'new')
                       }
-                      className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                      className={`flex-1 px-4 py-3 rounded-lg text-sm font-medium transition-all border-2 ${
                         selectedCondition === 'new'
-                          ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20'
-                          : 'bg-muted/50 text-foreground hover:bg-muted'
+                          ? 'bg-primary text-primary-foreground border-primary'
+                          : 'bg-background text-foreground border-border hover:border-primary'
                       }`}
                     >
                       New
@@ -221,10 +223,10 @@ export default function Shop() {
                       onClick={() =>
                         setSelectedCondition(selectedCondition === 'used' ? null : 'used')
                       }
-                      className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                      className={`flex-1 px-4 py-3 rounded-lg text-sm font-medium transition-all border-2 ${
                         selectedCondition === 'used'
-                          ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20'
-                          : 'bg-muted/50 text-foreground hover:bg-muted'
+                          ? 'bg-primary text-primary-foreground border-primary'
+                          : 'bg-background text-foreground border-border hover:border-primary'
                       }`}
                     >
                       Used
