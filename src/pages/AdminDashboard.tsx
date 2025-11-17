@@ -16,7 +16,7 @@ const dressSchema = z.object({
   description: z.string().trim().max(500),
   size: z.string().trim().min(1, { message: "Size is required" }),
   color: z.string().trim().min(1, { message: "Color is required" }),
-  price_per_day: z.number().min(0, { message: "Price must be positive" }),
+  price_per_day: z.number().min(0, { message: "Price must be positive" }).optional(),
 });
 
 interface Dress {
@@ -36,7 +36,8 @@ export default function AdminDashboard() {
   const { toast } = useToast();
   const [dresses, setDresses] = useState<Dress[]>([]);
   const [loading, setLoading] = useState(false);
-  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [primaryImageIndex, setPrimaryImageIndex] = useState(0);
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -92,9 +93,11 @@ export default function AdminDashboard() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    const priceValue = formData.price_per_day ? parseFloat(formData.price_per_day) : undefined;
+    
     const validation = dressSchema.safeParse({
       ...formData,
-      price_per_day: parseFloat(formData.price_per_day),
+      price_per_day: priceValue,
     });
 
     if (!validation.success) {
@@ -106,10 +109,10 @@ export default function AdminDashboard() {
       return;
     }
 
-    if (!imageFile) {
+    if (imageFiles.length === 0) {
       toast({
         title: "Image required",
-        description: "Please select an image for the dress",
+        description: "Please select at least one image for the dress",
         variant: "destructive",
       });
       return;
@@ -118,9 +121,11 @@ export default function AdminDashboard() {
     setLoading(true);
 
     try {
-      const imageUrl = await uploadImage(imageFile);
+      // Upload all images
+      const imageUrls = await Promise.all(imageFiles.map(file => uploadImage(file)));
 
-      const { error } = await supabase
+      // Insert dress record
+      const { data: dressData, error: dressError } = await supabase
         .from('dresses')
         .insert([{
           name: validation.data.name,
@@ -128,10 +133,26 @@ export default function AdminDashboard() {
           size: validation.data.size,
           color: validation.data.color,
           price_per_day: validation.data.price_per_day,
-          image_url: imageUrl,
-        }]);
+          image_url: imageUrls[primaryImageIndex], // Keep primary image in main table for backwards compatibility
+        }])
+        .select()
+        .single();
 
-      if (error) throw error;
+      if (dressError) throw dressError;
+
+      // Insert all images into dress_images table
+      const imageRecords = imageUrls.map((url, index) => ({
+        dress_id: dressData.id,
+        image_url: url,
+        is_primary: index === primaryImageIndex,
+        display_order: index,
+      }));
+
+      const { error: imagesError } = await supabase
+        .from('dress_images')
+        .insert(imageRecords);
+
+      if (imagesError) throw imagesError;
 
       toast({
         title: "Success!",
@@ -145,7 +166,8 @@ export default function AdminDashboard() {
         color: '',
         price_per_day: '',
       });
-      setImageFile(null);
+      setImageFiles([]);
+      setPrimaryImageIndex(0);
       fetchDresses();
     } catch (error: any) {
       toast({
@@ -235,21 +257,59 @@ export default function AdminDashboard() {
                 <Input
                   type="number"
                   step="0.01"
-                  placeholder="Price per day"
+                  placeholder="Price per day (optional)"
                   value={formData.price_per_day}
                   onChange={(e) => setFormData({ ...formData, price_per_day: e.target.value })}
-                  required
                 />
                 <div>
                   <label className="block text-sm font-medium mb-2">
-                    Dress Image
+                    Dress Images (select multiple)
                   </label>
                   <Input
                     type="file"
                     accept="image/*"
-                    onChange={(e) => setImageFile(e.target.files?.[0] || null)}
+                    multiple
+                    onChange={(e) => {
+                      const files = Array.from(e.target.files || []);
+                      setImageFiles(files);
+                      setPrimaryImageIndex(0);
+                    }}
                     required
                   />
+                  {imageFiles.length > 0 && (
+                    <div className="mt-3">
+                      <p className="text-sm text-muted-foreground mb-2">
+                        {imageFiles.length} image(s) selected. Select primary image:
+                      </p>
+                      <div className="flex gap-2 flex-wrap">
+                        {imageFiles.map((file, index) => (
+                          <button
+                            key={index}
+                            type="button"
+                            onClick={() => setPrimaryImageIndex(index)}
+                            className={`relative w-16 h-16 rounded border-2 overflow-hidden ${
+                              index === primaryImageIndex 
+                                ? 'border-primary ring-2 ring-primary' 
+                                : 'border-border'
+                            }`}
+                          >
+                            <img
+                              src={URL.createObjectURL(file)}
+                              alt={`Preview ${index + 1}`}
+                              className="w-full h-full object-cover"
+                            />
+                            {index === primaryImageIndex && (
+                              <div className="absolute inset-0 bg-primary/20 flex items-center justify-center">
+                                <span className="text-xs font-bold text-primary-foreground bg-primary px-1 rounded">
+                                  Primary
+                                </span>
+                              </div>
+                            )}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
                 <Button type="submit" className="w-full" disabled={loading}>
                   <Upload className="w-4 h-4 mr-2" />
@@ -282,7 +342,7 @@ export default function AdminDashboard() {
                       <div className="flex-1">
                         <h3 className="font-semibold">{dress.name}</h3>
                         <p className="text-sm text-muted-foreground">
-                          ${dress.price_per_day}/day - {dress.size} - {dress.color}
+                          {dress.price_per_day ? `$${dress.price_per_day}/day - ` : ''}{dress.size} - {dress.color}
                         </p>
                       </div>
                       <Button
