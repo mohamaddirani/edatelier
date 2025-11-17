@@ -125,6 +125,8 @@ export default function DressDetail() {
           Back to Collection
         </Button>
 
+        <h1 className="text-4xl font-bold mb-8">{dress.name}</h1>
+
         <div className="grid md:grid-cols-2 gap-8">
           {/* Image Gallery */}
           <div>
@@ -156,23 +158,21 @@ export default function DressDetail() {
                 ))}
               </div>
             )}
+
+            {dress.description && (
+              <div className="mt-6">
+                <h2 className="text-lg font-semibold mb-2">Description</h2>
+                <p className="text-muted-foreground">{dress.description}</p>
+              </div>
+            )}
           </div>
 
           {/* Dress Details */}
           <div>
-            <h1 className="text-4xl font-bold mb-4">{dress.name}</h1>
-            
             {!dress.is_available && (
               <Badge variant="destructive" className="mb-4">
                 Unavailable
               </Badge>
-            )}
-
-            {dress.description && (
-              <div className="mb-6">
-                <h2 className="text-lg font-semibold mb-2">Description</h2>
-                <p className="text-muted-foreground">{dress.description}</p>
-              </div>
             )}
 
             <div className="space-y-4 mb-6">
