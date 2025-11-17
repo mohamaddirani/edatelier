@@ -5,6 +5,7 @@ import Footer from '@/components/Footer';
 import DressCard from '@/components/DressCard';
 import ContactForm from '@/components/ContactForm';
 import InteractiveBackground from '@/components/InteractiveBackground';
+import FAQ from '@/components/FAQ';
 import { Button } from '@/components/ui/button';
 import { Sparkles } from 'lucide-react';
 
@@ -145,6 +146,9 @@ export default function Index() {
           <ContactForm />
         </div>
       </section>
+
+      {/* FAQ Section */}
+      <FAQ />
 
       <Footer />
     </div>

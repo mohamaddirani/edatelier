@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import DressCard from '@/components/DressCard';
+import InteractiveBackground from '@/components/InteractiveBackground';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -110,7 +111,8 @@ export default function Shop() {
   const hasActiveFilters = selectedCategory !== 'all' || selectedColor !== 'all' || selectedCondition !== null;
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col bg-background relative">
+      <InteractiveBackground />
       <Navbar />
 
       {/* Hero Section */}
