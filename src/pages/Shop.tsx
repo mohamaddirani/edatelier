@@ -111,12 +111,12 @@ export default function Shop() {
   const hasActiveFilters = selectedCategory !== 'all' || selectedColor !== 'all' || selectedCondition !== null;
 
   return (
-    <div className="min-h-screen flex flex-col bg-background relative">
+    <div className="min-h-screen flex flex-col relative">
       <InteractiveBackground />
       <Navbar />
 
       {/* Hero Section */}
-      <section className="relative pt-32 pb-12 px-4 bg-gradient-to-br from-primary/5 via-background to-secondary/5">
+      <section className="relative pt-32 pb-12 px-4">
         <div className="container mx-auto text-center relative z-10 max-w-3xl">
           <h1 className="text-5xl md:text-6xl font-bold mb-4 animate-fade-in">
             Shop Collection
