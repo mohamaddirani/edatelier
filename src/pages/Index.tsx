@@ -4,6 +4,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import DressCard from '@/components/DressCard';
 import ContactForm from '@/components/ContactForm';
+import InteractiveBackground from '@/components/InteractiveBackground';
 import { Button } from '@/components/ui/button';
 import { Sparkles } from 'lucide-react';
 
@@ -45,7 +46,8 @@ export default function Index() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col relative">
+      <InteractiveBackground />
       <Navbar />
       
       {/* Hero Section */}
