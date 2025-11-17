@@ -99,7 +99,13 @@ export default function Index() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {featuredDresses.map((dress) => (
-                <DressCard key={dress.id} {...dress} />
+                <DressCard 
+                  key={dress.id} 
+                  id={dress.id}
+                  name={dress.name}
+                  image_url={dress.image_url}
+                  is_available={dress.is_available}
+                />
               ))}
             </div>
           )}
