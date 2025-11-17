@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { z } from 'zod';
+import { Instagram, Facebook, MessageCircle } from 'lucide-react';
 
 const emailSchema = z.string().email({ message: "Please enter a valid email address" });
 
@@ -72,6 +73,32 @@ export default function Footer() {
               Discover exquisite designer dresses for every special occasion. 
               Your perfect dress awaits.
             </p>
+            <div className="flex gap-3">
+              <a
+                href="https://www.instagram.com/enaamdirani.atelier"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 rounded-full bg-primary/10 hover:bg-primary flex items-center justify-center transition-colors group"
+              >
+                <Instagram className="w-5 h-5 text-primary group-hover:text-primary-foreground transition-colors" />
+              </a>
+              <a
+                href="https://facebook.com/EDAtelier"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 rounded-full bg-primary/10 hover:bg-primary flex items-center justify-center transition-colors group"
+              >
+                <Facebook className="w-5 h-5 text-primary group-hover:text-primary-foreground transition-colors" />
+              </a>
+              <a
+                href="https://api.whatsapp.com/send?phone=9613836748"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 rounded-full bg-primary/10 hover:bg-primary flex items-center justify-center transition-colors group"
+              >
+                <MessageCircle className="w-5 h-5 text-primary group-hover:text-primary-foreground transition-colors" />
+              </a>
+            </div>
           </div>
 
           <div>
