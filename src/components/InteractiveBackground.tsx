@@ -21,11 +21,11 @@ export default function InteractiveBackground() {
       return `hsla(${h}, ${s}, ${l}, ${alpha})`;
     };
 
-    const primaryColor = getColor('--primary', 0.15);
-    const accentColor = getColor('--accent', 0.08);
-    const secondaryColor = getColor('--secondary', 0.03);
-    const accentColor2 = getColor('--accent', 0.1);
-    const primaryColor2 = getColor('--primary', 0.05);
+    const primaryColor = getColor('--primary', 0.04);
+    const accentColor = getColor('--accent', 0.03);
+    const secondaryColor = getColor('--secondary', 0.02);
+    const accentColor2 = getColor('--accent', 0.03);
+    const primaryColor2 = getColor('--primary', 0.02);
 
     // Set canvas size
     const resizeCanvas = () => {
