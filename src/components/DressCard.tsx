@@ -83,25 +83,27 @@ export default function DressCard({
       onClick={() => navigate(`/dress/${id}`)}
     >
       <div className="relative" ref={imgRef}>
-        <div className="aspect-[3/4] overflow-hidden bg-muted">
+        <div className="aspect-[3/4] overflow-hidden bg-muted relative">
           {shouldLoad ? (
             <>
               {!imageLoaded && (
-                <div className="absolute inset-0 bg-gradient-to-br from-muted via-muted-foreground/5 to-muted animate-pulse" />
+                <div className="absolute inset-0 bg-gradient-to-br from-muted via-muted-foreground/5 to-muted animate-pulse z-10" />
               )}
               <img
                 src={primaryImage}
                 alt={name}
                 loading="lazy"
                 decoding="async"
+                width="316"
+                height="421"
                 onLoad={() => setImageLoaded(true)}
-                className={`w-full h-full object-cover group-hover:scale-105 transition-all duration-500 will-change-transform ${
+                className={`absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-all duration-500 will-change-transform ${
                   imageLoaded ? 'opacity-100' : 'opacity-0'
                 }`}
               />
             </>
           ) : (
-            <div className="w-full h-full bg-gradient-to-br from-muted via-muted-foreground/5 to-muted" />
+            <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-muted via-muted-foreground/5 to-muted" />
           )}
         </div>
         {!is_available && (
@@ -110,8 +112,8 @@ export default function DressCard({
           </Badge>
         )}
       </div>
-      <div className="p-4 min-h-[60px] flex items-center justify-center">
-        <h3 className="font-semibold text-lg text-center">{name}</h3>
+      <div className="p-4 h-[60px] flex items-center justify-center">
+        <h3 className="font-semibold text-lg text-center line-clamp-2">{name}</h3>
       </div>
     </Card>
   );
