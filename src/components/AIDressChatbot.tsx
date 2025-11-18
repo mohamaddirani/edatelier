@@ -195,7 +195,7 @@ export const AIDressChatbot = () => {
   }
 
   return (
-    <Card className="fixed bottom-8 right-8 w-[420px] h-[650px] flex flex-col shadow-2xl z-50 bg-background/95 backdrop-blur-xl border-border/50 overflow-hidden">
+    <Card className="fixed bottom-0 right-0 md:bottom-8 md:right-8 w-full h-full md:w-[420px] md:h-[650px] md:rounded-2xl rounded-none flex flex-col shadow-2xl z-50 bg-background/95 backdrop-blur-xl border-border/50 overflow-hidden">
       {/* Elegant Header with Gradient */}
       <div className="relative flex items-center justify-between p-6 border-b border-border/50 bg-gradient-to-r from-primary via-primary to-accent">
         <div className="flex items-center gap-3">
