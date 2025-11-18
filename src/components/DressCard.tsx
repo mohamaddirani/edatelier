@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Card } from '@/components/ui/card';
@@ -26,12 +26,37 @@ export default function DressCard({
 }: DressCardProps) {
   const navigate = useNavigate();
   const [primaryImage, setPrimaryImage] = useState<string>(image_url);
-  const [loading, setLoading] = useState(true);
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [shouldLoad, setShouldLoad] = useState(false);
+  const imgRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    fetchPrimaryImage();
-  }, [id]);
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setShouldLoad(true);
+            observer.disconnect();
+          }
+        });
+      },
+      {
+        rootMargin: '50px',
+      }
+    );
+
+    if (imgRef.current) {
+      observer.observe(imgRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (shouldLoad) {
+      fetchPrimaryImage();
+    }
+  }, [shouldLoad, id]);
 
   const fetchPrimaryImage = async () => {
     try {
@@ -49,30 +74,35 @@ export default function DressCard({
       }
     } catch (error) {
       console.error('Error fetching images:', error);
-    } finally {
-      setLoading(false);
     }
   };
 
   return (
     <Card 
-      className="overflow-hidden group hover:shadow-elegant transition-all duration-300 cursor-pointer"
+      className="overflow-hidden group hover:shadow-elegant transition-all duration-300 cursor-pointer will-change-transform"
       onClick={() => navigate(`/dress/${id}`)}
     >
-      <div className="relative">
+      <div className="relative" ref={imgRef}>
         <div className="aspect-[3/4] overflow-hidden bg-muted">
-          {!imageLoaded && (
-            <div className="absolute inset-0 bg-muted animate-pulse" />
+          {shouldLoad ? (
+            <>
+              {!imageLoaded && (
+                <div className="absolute inset-0 bg-gradient-to-br from-muted via-muted-foreground/5 to-muted animate-pulse" />
+              )}
+              <img
+                src={primaryImage}
+                alt={name}
+                loading="lazy"
+                decoding="async"
+                onLoad={() => setImageLoaded(true)}
+                className={`w-full h-full object-cover group-hover:scale-105 transition-all duration-500 will-change-transform ${
+                  imageLoaded ? 'opacity-100' : 'opacity-0'
+                }`}
+              />
+            </>
+          ) : (
+            <div className="w-full h-full bg-gradient-to-br from-muted via-muted-foreground/5 to-muted" />
           )}
-          <img
-            src={primaryImage}
-            alt={name}
-            loading="lazy"
-            onLoad={() => setImageLoaded(true)}
-            className={`w-full h-full object-cover group-hover:scale-105 transition-all duration-500 ${
-              imageLoaded ? 'opacity-100' : 'opacity-0'
-            }`}
-          />
         </div>
         {!is_available && (
           <Badge className="absolute top-4 right-4 bg-destructive z-10">
