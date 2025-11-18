@@ -62,10 +62,11 @@ export default function DressCard({
         <div className="aspect-[3/4] bg-muted animate-pulse" />
       ) : (
         <div className="relative">
-          <div className="aspect-[3/4] overflow-hidden">
+          <div className="aspect-[3/4] overflow-hidden bg-muted">
             <img
               src={primaryImage}
               alt={name}
+              loading="eager"
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
             />
           </div>
