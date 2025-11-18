@@ -48,7 +48,8 @@ export default {
           foreground: "hsl(var(--card-foreground))",
         },
         navy: "210 100% 13%",
-        tan: "25 36% 66%",
+        tan: "17 55% 66%",
+        sandal: "17 55% 66%",
         beige: "32 24% 84%",
       },
       borderRadius: {
