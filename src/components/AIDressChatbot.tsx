@@ -220,22 +220,48 @@ export const AIDressChatbot = () => {
       {/* Messages Area with Custom Scrollbar */}
       <ScrollArea className="flex-1 p-6">
         <div className="space-y-4">
-          {messages.map((msg, idx) => (
-            <div
-              key={idx}
-              className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} animate-in fade-in slide-in-from-bottom-2 duration-300`}
-            >
+          {messages.map((msg, idx) => {
+            // Check if message contains WhatsApp link
+            const whatsappMatch = msg.content.match(/(https:\/\/api\.whatsapp\.com\/send\?phone=\d+)/);
+            const hasWhatsApp = whatsappMatch !== null;
+            
+            return (
               <div
-                className={`max-w-[85%] rounded-2xl px-5 py-3 shadow-sm ${
-                  msg.role === "user"
-                    ? "bg-gradient-to-br from-primary to-primary/90 text-primary-foreground rounded-br-sm"
-                    : "bg-muted/80 text-foreground rounded-bl-sm border border-border/50"
-                }`}
+                key={idx}
+                className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} animate-in fade-in slide-in-from-bottom-2 duration-300`}
               >
-                <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
+                <div
+                  className={`max-w-[85%] rounded-2xl px-5 py-3 shadow-sm ${
+                    msg.role === "user"
+                      ? "bg-gradient-to-br from-primary to-primary/90 text-primary-foreground rounded-br-sm"
+                      : "bg-muted/80 text-foreground rounded-bl-sm border border-border/50"
+                  }`}
+                >
+                  {hasWhatsApp && msg.role === "assistant" ? (
+                    <div className="space-y-3">
+                      <p className="text-sm leading-relaxed whitespace-pre-wrap">
+                        {msg.content.split(whatsappMatch[0])[0]}
+                      </p>
+                      <Button
+                        onClick={() => window.open(whatsappMatch[0], '_blank')}
+                        className="w-full bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 text-white shadow-md"
+                        size="sm"
+                      >
+                        Contact Designer on WhatsApp
+                      </Button>
+                      {msg.content.split(whatsappMatch[0])[1] && (
+                        <p className="text-sm leading-relaxed whitespace-pre-wrap">
+                          {msg.content.split(whatsappMatch[0])[1]}
+                        </p>
+                      )}
+                    </div>
+                  ) : (
+                    <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
           {isLoading && (
             <div className="flex justify-start animate-in fade-in duration-300">
               <div className="bg-muted/80 rounded-2xl rounded-bl-sm px-5 py-3 border border-border/50">
