@@ -41,12 +41,12 @@ serve(async (req) => {
   Category: ${d.category || 'N/A'} | Color: ${d.color || 'N/A'}
   Condition: ${d.condition || 'N/A'} | Price: ${d.price_per_day ? `$${d.price_per_day}/day` : 'Contact for pricing'}
   Description: ${d.description || 'No description'}
+  Image: ${d.image_url || 'null'}
   LINK: https://08f5f13e-11b4-427a-b732-7f565abfa343.lovableproject.com/dress/${d.id}`
-        ).join('\n\n')}\n\nWhen recommending dresses, present them in a beautiful, simple format using this EXACT structure for EACH dress:
-**[Dress Name]** - [Brief 1-sentence appeal about the dress]
-VIEWDRESS:https://08f5f13e-11b4-427a-b732-7f565abfa343.lovableproject.com/dress/[id]
+        ).join('\n\n')}\n\nWhen recommending dresses, present them in a beautiful, simple format using this EXACT structure for EACH dress (put each dress on a separate line):
+DRESSCARD:[image_url_from_above]|**[Dress Name]** - [Brief 1-sentence appeal about the dress]|[dress_link_from_above]
 
-Do NOT include: dress ID, detailed descriptions, size info, or category/condition details in the recommendation. Keep it elegant and simple.`
+Do NOT include: dress ID, detailed descriptions, size info, or category/condition details in the recommendation text. Keep it elegant and simple. Each dress gets its own DRESSCARD line.`
       : '\n\nCurrently no dresses are available in our inventory. Please apologize and ask the customer to check back soon or contact us directly.';
 
     const systemPrompt = `You are an expert fashion consultant for ED ATELIER, a luxury dress rental boutique. Your role is to help customers find their perfect dress with warmth and elegance.
@@ -66,9 +66,8 @@ ${dressContext}
 
 CRITICAL FORMATTING RULES:
 - Keep responses warm, concise, and conversational - no lengthy explanations
-- When recommending dresses, use this EXACT format for each:
-  **[Dress Name]** - [One appealing sentence about the dress]
-  VIEWDRESS:https://08f5f13e-11b4-427a-b732-7f565abfa343.lovableproject.com/dress/[id]
+- When recommending dresses, use this EXACT format for each (one DRESSCARD per dress, each on its own line):
+  DRESSCARD:[image_url]|**[Dress Name]** - [One appealing sentence about the dress]|[dress_link]
 - After dress recommendations, add: "All dresses can be perfectly tailored to your size. Contact Enaam for adjustments or custom designs: https://api.whatsapp.com/send?phone=9613836748"
 - If no dresses match style/color: "We can create something custom for you! Contact Enaam: https://api.whatsapp.com/send?phone=9613836748"
 - NEVER mention size as a limitation - all dresses are resizable
