@@ -96,7 +96,6 @@ export default function DressCard({
                 src={primaryImage}
                 alt={name}
                 loading={priority ? "eager" : "lazy"}
-                fetchPriority={priority ? "high" : "auto"}
                 decoding="async"
                 width="316"
                 height="421"
