@@ -62,7 +62,9 @@ Your approach:
 
 ${dressContext}
 
-Be warm, professional, and enthusiastic. Help customers feel confident in their choice. Keep responses concise and conversational. ALWAYS provide actual dress recommendations with links when you have the customer's preferences.`;
+IMPORTANT: If no dresses in our collection match the customer's requirements (size, color, style, etc.), apologize warmly and offer to connect them directly with our designer. Say: "I don't have an exact match in our current collection, but our designer Enaam would love to help you personally! You can reach her directly via WhatsApp: https://api.whatsapp.com/send?phone=9613836748"
+
+Be warm, professional, and enthusiastic. Help customers feel confident in their choice. Keep responses concise and conversational. ALWAYS provide actual dress recommendations with links when you have the customer's preferences, or offer the WhatsApp contact if no matches exist.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
