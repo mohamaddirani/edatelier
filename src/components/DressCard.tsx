@@ -9,6 +9,7 @@ interface DressCardProps {
   name: string;
   image_url: string;
   is_available: boolean;
+  priority?: boolean;
 }
 
 interface DressImage {
@@ -22,7 +23,8 @@ export default function DressCard({
   id,
   name, 
   image_url, 
-  is_available 
+  is_available,
+  priority = false
 }: DressCardProps) {
   const navigate = useNavigate();
   const [primaryImage, setPrimaryImage] = useState<string>(image_url);
@@ -92,7 +94,8 @@ export default function DressCard({
               <img
                 src={primaryImage}
                 alt={name}
-                loading="lazy"
+                loading={priority ? "eager" : "lazy"}
+                fetchPriority={priority ? "high" : "auto"}
                 decoding="async"
                 width="316"
                 height="421"
