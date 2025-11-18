@@ -79,6 +79,7 @@ export default function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 rounded-full bg-primary/10 hover:bg-primary flex items-center justify-center transition-colors group"
+                aria-label="Follow us on Instagram"
               >
                 <Instagram className="w-5 h-5 text-primary group-hover:text-primary-foreground transition-colors" />
               </a>
@@ -87,6 +88,7 @@ export default function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 rounded-full bg-primary/10 hover:bg-primary flex items-center justify-center transition-colors group"
+                aria-label="Follow us on Facebook"
               >
                 <Facebook className="w-5 h-5 text-primary group-hover:text-primary-foreground transition-colors" />
               </a>
@@ -95,6 +97,7 @@ export default function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 rounded-full bg-primary/10 hover:bg-primary flex items-center justify-center transition-colors group"
+                aria-label="Contact us on WhatsApp"
               >
                 <MessageCircle className="w-5 h-5 text-primary group-hover:text-primary-foreground transition-colors" />
               </a>
