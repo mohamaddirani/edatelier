@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
-import { MessageCircle, X, Send, Loader2 } from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Sparkles, X, Send, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface Message {
@@ -185,74 +186,91 @@ export const AIDressChatbot = () => {
     return (
       <Button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg z-50 bg-primary hover:bg-primary/90"
+        className="fixed bottom-8 right-8 h-16 w-16 rounded-full shadow-2xl z-50 bg-gradient-to-br from-primary via-primary to-accent hover:shadow-accent/50 transition-all duration-300 hover:scale-105 group"
         size="icon"
       >
-        <MessageCircle className="h-6 w-6" />
+        <Sparkles className="h-7 w-7 text-primary-foreground group-hover:rotate-12 transition-transform" />
       </Button>
     );
   }
 
   return (
-    <Card className="fixed bottom-6 right-6 w-96 h-[600px] flex flex-col shadow-2xl z-50 bg-background border-2">
-      <div className="flex items-center justify-between p-4 border-b bg-primary text-primary-foreground">
-        <div className="flex items-center gap-2">
-          <MessageCircle className="h-5 w-5" />
-          <h3 className="font-semibold">Dress Consultant</h3>
+    <Card className="fixed bottom-8 right-8 w-[420px] h-[650px] flex flex-col shadow-2xl z-50 bg-background/95 backdrop-blur-xl border-border/50 overflow-hidden">
+      {/* Elegant Header with Gradient */}
+      <div className="relative flex items-center justify-between p-6 border-b border-border/50 bg-gradient-to-r from-primary via-primary to-accent">
+        <div className="flex items-center gap-3">
+          <div className="h-10 w-10 rounded-full bg-primary-foreground/10 flex items-center justify-center backdrop-blur-sm">
+            <Sparkles className="h-5 w-5 text-primary-foreground" />
+          </div>
+          <div>
+            <h3 className="font-semibold text-primary-foreground text-lg">AI Dress Consultant</h3>
+            <p className="text-xs text-primary-foreground/70">by ED ATELIER</p>
+          </div>
         </div>
         <Button
           variant="ghost"
           size="icon"
           onClick={() => setIsOpen(false)}
-          className="hover:bg-primary-foreground/10"
+          className="hover:bg-primary-foreground/10 text-primary-foreground h-9 w-9"
         >
           <X className="h-5 w-5" />
         </Button>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages.map((msg, idx) => (
-          <div
-            key={idx}
-            className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
-          >
+      {/* Messages Area with Custom Scrollbar */}
+      <ScrollArea className="flex-1 p-6">
+        <div className="space-y-4">
+          {messages.map((msg, idx) => (
             <div
-              className={`max-w-[80%] rounded-lg px-4 py-2 ${
-                msg.role === "user"
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-muted"
-              }`}
+              key={idx}
+              className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} animate-in fade-in slide-in-from-bottom-2 duration-300`}
             >
-              <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+              <div
+                className={`max-w-[85%] rounded-2xl px-5 py-3 shadow-sm ${
+                  msg.role === "user"
+                    ? "bg-gradient-to-br from-primary to-primary/90 text-primary-foreground rounded-br-sm"
+                    : "bg-muted/80 text-foreground rounded-bl-sm border border-border/50"
+                }`}
+              >
+                <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
+              </div>
             </div>
-          </div>
-        ))}
-        {isLoading && (
-          <div className="flex justify-start">
-            <div className="bg-muted rounded-lg px-4 py-2">
-              <Loader2 className="h-4 w-4 animate-spin" />
+          ))}
+          {isLoading && (
+            <div className="flex justify-start animate-in fade-in duration-300">
+              <div className="bg-muted/80 rounded-2xl rounded-bl-sm px-5 py-3 border border-border/50">
+                <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+              </div>
             </div>
-          </div>
-        )}
-        <div ref={messagesEndRef} />
-      </div>
+          )}
+          <div ref={messagesEndRef} />
+        </div>
+      </ScrollArea>
 
-      <div className="p-4 border-t">
-        <div className="flex gap-2">
-          <Input
+      {/* Input Area with Enhanced Styling */}
+      <div className="p-4 border-t border-border/50 bg-muted/30">
+        <div className="flex gap-3 items-end">
+          <Textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="Type your message..."
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+              }
+            }}
+            placeholder="Ask about dresses, styling, occasions..."
             disabled={isLoading}
-            className="flex-1"
+            className="flex-1 min-h-[44px] max-h-[120px] resize-none bg-background/50 border-border/50 focus:border-primary/50 transition-colors"
+            rows={1}
           />
           <Button
             onClick={sendMessage}
             disabled={isLoading || !input.trim()}
             size="icon"
+            className="h-11 w-11 rounded-xl bg-gradient-to-br from-primary to-accent hover:shadow-lg hover:shadow-primary/20 transition-all duration-300 disabled:opacity-50"
           >
-            <Send className="h-4 w-4" />
+            <Send className="h-5 w-5" />
           </Button>
         </div>
       </div>
