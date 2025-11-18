@@ -115,7 +115,7 @@ export default function DressDetail() {
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
-      <main className="flex-1 container mx-auto px-4 py-8">
+      <main className="flex-1 container mx-auto px-4 sm:px-6 lg:px-8 py-8 max-w-7xl">
         <Button
           variant="ghost"
           onClick={() => {
@@ -130,31 +130,35 @@ export default function DressDetail() {
 
         <h1 className="text-4xl font-bold mb-8">{dress.name}</h1>
 
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
           {/* Image Gallery */}
-          <div>
-            <div className="aspect-[3/4] mb-4 rounded-lg overflow-hidden bg-muted">
+          <div className="space-y-4">
+            <div className="w-full aspect-[3/4] rounded-lg overflow-hidden bg-muted">
               <img
                 src={selectedImage}
                 alt={dress.name}
+                width="600"
+                height="800"
                 className="w-full h-full object-cover"
               />
             </div>
             {images.length > 1 && (
-              <div className="flex gap-2 overflow-x-auto">
+              <div className="grid grid-cols-4 gap-2 sm:gap-3">
                 {images.map((image) => (
                   <button
                     key={image.id}
                     onClick={() => setSelectedImage(image.image_url)}
-                    className={`flex-shrink-0 w-20 h-20 rounded-md overflow-hidden border-2 transition-all ${
+                    className={`aspect-[3/4] rounded-md overflow-hidden border-2 transition-colors ${
                       selectedImage === image.image_url
                         ? 'border-primary'
-                        : 'border-transparent'
+                        : 'border-transparent hover:border-primary/50'
                     }`}
                   >
                     <img
                       src={image.image_url}
                       alt={`${dress.name} thumbnail`}
+                      width="150"
+                      height="200"
                       className="w-full h-full object-cover"
                     />
                   </button>
