@@ -27,6 +27,7 @@ export default function DressCard({
   const navigate = useNavigate();
   const [primaryImage, setPrimaryImage] = useState<string>(image_url);
   const [loading, setLoading] = useState(true);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   useEffect(() => {
     fetchPrimaryImage();
@@ -58,25 +59,27 @@ export default function DressCard({
       className="overflow-hidden group hover:shadow-elegant transition-all duration-300 cursor-pointer"
       onClick={() => navigate(`/dress/${id}`)}
     >
-      {loading ? (
-        <div className="aspect-[3/4] bg-muted animate-pulse" />
-      ) : (
-        <div className="relative">
-          <div className="aspect-[3/4] overflow-hidden bg-muted">
-            <img
-              src={primaryImage}
-              alt={name}
-              loading="eager"
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-            />
-          </div>
-          {!is_available && (
-            <Badge className="absolute top-4 right-4 bg-destructive z-10">
-              Unavailable
-            </Badge>
+      <div className="relative">
+        <div className="aspect-[3/4] overflow-hidden bg-muted">
+          {!imageLoaded && (
+            <div className="absolute inset-0 bg-muted animate-pulse" />
           )}
+          <img
+            src={primaryImage}
+            alt={name}
+            loading="lazy"
+            onLoad={() => setImageLoaded(true)}
+            className={`w-full h-full object-cover group-hover:scale-105 transition-all duration-500 ${
+              imageLoaded ? 'opacity-100' : 'opacity-0'
+            }`}
+          />
         </div>
-      )}
+        {!is_available && (
+          <Badge className="absolute top-4 right-4 bg-destructive z-10">
+            Unavailable
+          </Badge>
+        )}
+      </div>
       <div className="p-4 min-h-[60px] flex items-center justify-center">
         <h3 className="font-semibold text-lg text-center">{name}</h3>
       </div>
