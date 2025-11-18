@@ -7,6 +7,7 @@ import InteractiveBackground from '@/components/InteractiveBackground';
 import { AIDressChatbot } from '@/components/AIDressChatbot';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Card } from '@/components/ui/card';
 import {
   Select,
   SelectContent,
@@ -268,7 +269,12 @@ export default function Shop() {
             {loading ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-                  <div key={i} className="h-[400px] bg-muted/50 animate-pulse rounded-xl" />
+                  <Card key={i} className="overflow-hidden">
+                    <div className="w-full h-[421px] bg-muted" />
+                    <div className="p-4 h-[60px] flex items-center justify-center">
+                      <div className="h-6 bg-muted/80 rounded w-3/4" />
+                    </div>
+                  </Card>
                 ))}
               </div>
             ) : dresses.length === 0 ? (

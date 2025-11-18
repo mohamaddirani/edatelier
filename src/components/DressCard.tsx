@@ -84,17 +84,14 @@ export default function DressCard({
 
   return (
     <Card 
-      className="overflow-hidden group hover:shadow-elegant transition-all duration-300 cursor-pointer contain-layout"
+      className="overflow-hidden group hover:shadow-elegant transition-shadow duration-300 cursor-pointer"
       onClick={() => navigate(`/dress/${id}`)}
-      style={{ contentVisibility: 'auto' }}
     >
       <div className="relative" ref={imgRef}>
-        <div className="aspect-[3/4] overflow-hidden bg-muted relative">
+        <div className="w-full h-[421px] overflow-hidden bg-muted relative">
           {shouldLoad ? (
             <>
-              {!imageLoaded && (
-                <div className="absolute inset-0 bg-gradient-to-br from-muted via-muted-foreground/5 to-muted animate-pulse z-10" />
-              )}
+              <div className="absolute inset-0 bg-muted" />
               <img
                 src={primaryImage}
                 alt={name}
@@ -104,14 +101,11 @@ export default function DressCard({
                 width="316"
                 height="421"
                 onLoad={() => setImageLoaded(true)}
-                className={`absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-all duration-500 ${
-                  imageLoaded ? 'opacity-100' : 'opacity-0'
-                }`}
-                style={{ willChange: imageLoaded ? 'auto' : 'opacity' }}
+                className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
             </>
           ) : (
-            <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-muted via-muted-foreground/5 to-muted" />
+            <div className="absolute inset-0 w-full h-full bg-muted" />
           )}
         </div>
         {!is_available && (

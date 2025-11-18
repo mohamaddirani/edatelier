@@ -91,13 +91,13 @@ export default function Index() {
           </div>
 
           {loading ? (
-            <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory h-[502px]">
+            <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory h-[481px]">
               {[1, 2, 3, 4, 5, 6].map((i) => (
                 <div key={i} className="flex-shrink-0 w-80 snap-center">
-                  <Card className="overflow-hidden h-full">
-                    <div className="aspect-[3/4] bg-muted animate-pulse" />
+                  <Card className="overflow-hidden">
+                    <div className="w-full h-[421px] bg-muted" />
                     <div className="p-4 h-[60px] flex items-center justify-center">
-                      <div className="h-6 bg-muted/80 rounded w-3/4 animate-pulse" />
+                      <div className="h-6 bg-muted/80 rounded w-3/4" />
                     </div>
                   </Card>
                 </div>
@@ -110,7 +110,7 @@ export default function Index() {
               </p>
             </div>
           ) : (
-            <div className="relative group h-[502px]">
+            <div className="relative group h-[481px]">
               <button
                 onClick={() => {
                   const container = document.getElementById('featured-scroll');
