@@ -46,6 +46,29 @@ export default function Shop() {
   const [selectedCondition, setSelectedCondition] = useState<string | null>(null);
   const [availableColors, setAvailableColors] = useState<string[]>([]);
   const [showFilters, setShowFilters] = useState(false);
+  const [scrollPosition, setScrollPosition] = useState(0);
+
+  // Save scroll position before navigating away
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollPosition(window.scrollY);
+      sessionStorage.setItem('shopScrollPosition', window.scrollY.toString());
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Restore scroll position when coming back
+  useEffect(() => {
+    const savedPosition = sessionStorage.getItem('shopScrollPosition');
+    if (savedPosition && !loading) {
+      // Use setTimeout to ensure DOM is fully rendered
+      setTimeout(() => {
+        window.scrollTo(0, parseInt(savedPosition));
+      }, 100);
+    }
+  }, [loading]);
 
   useEffect(() => {
     fetchDresses();
