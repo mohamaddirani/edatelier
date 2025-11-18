@@ -4,6 +4,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import DressCard from '@/components/DressCard';
 import InteractiveBackground from '@/components/InteractiveBackground';
+import { AIDressChatbot } from '@/components/AIDressChatbot';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -289,6 +290,7 @@ export default function Shop() {
       </main>
 
       <Footer />
+      <AIDressChatbot />
     </div>
   );
 }
