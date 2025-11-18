@@ -29,7 +29,7 @@ export default function DressCard({
   const navigate = useNavigate();
   const [primaryImage, setPrimaryImage] = useState<string>(image_url);
   const [imageLoaded, setImageLoaded] = useState(false);
-  const [shouldLoad, setShouldLoad] = useState(false);
+  const [shouldLoad, setShouldLoad] = useState(priority);
   const imgRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -81,8 +81,9 @@ export default function DressCard({
 
   return (
     <Card 
-      className="overflow-hidden group hover:shadow-elegant transition-all duration-300 cursor-pointer will-change-transform"
+      className="overflow-hidden group hover:shadow-elegant transition-all duration-300 cursor-pointer contain-layout"
       onClick={() => navigate(`/dress/${id}`)}
+      style={{ contentVisibility: 'auto' }}
     >
       <div className="relative" ref={imgRef}>
         <div className="aspect-[3/4] overflow-hidden bg-muted relative">
@@ -100,9 +101,10 @@ export default function DressCard({
                 width="316"
                 height="421"
                 onLoad={() => setImageLoaded(true)}
-                className={`absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-all duration-500 will-change-transform ${
+                className={`absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-all duration-500 ${
                   imageLoaded ? 'opacity-100' : 'opacity-0'
                 }`}
+                style={{ willChange: imageLoaded ? 'auto' : 'opacity' }}
               />
             </>
           ) : (

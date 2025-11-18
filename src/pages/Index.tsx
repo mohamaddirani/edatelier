@@ -8,6 +8,7 @@ import InteractiveBackground from '@/components/InteractiveBackground';
 import FAQ from '@/components/FAQ';
 import { AIDressChatbot } from '@/components/AIDressChatbot';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { Sparkles } from 'lucide-react';
 
 interface Dress {
@@ -90,11 +91,15 @@ export default function Index() {
           </div>
 
           {loading ? (
-            <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory min-h-[482px]">
+            <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory h-[502px]">
               {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div key={i} className="flex-shrink-0 w-80">
-                  <div className="aspect-[3/4] bg-muted animate-pulse rounded-t-lg" />
-                  <div className="h-[60px] bg-muted/80 animate-pulse rounded-b-lg mt-1" />
+                <div key={i} className="flex-shrink-0 w-80 snap-center">
+                  <Card className="overflow-hidden h-full">
+                    <div className="aspect-[3/4] bg-muted animate-pulse" />
+                    <div className="p-4 h-[60px] flex items-center justify-center">
+                      <div className="h-6 bg-muted/80 rounded w-3/4 animate-pulse" />
+                    </div>
+                  </Card>
                 </div>
               ))}
             </div>
@@ -105,7 +110,7 @@ export default function Index() {
               </p>
             </div>
           ) : (
-            <div className="relative group min-h-[482px]">
+            <div className="relative group h-[502px]">
               <button
                 onClick={() => {
                   const container = document.getElementById('featured-scroll');
@@ -118,7 +123,7 @@ export default function Index() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
               </button>
-              <div id="featured-scroll" className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory">
+              <div id="featured-scroll" className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory h-full">
                 {featuredDresses.map((dress, index) => (
                   <div key={dress.id} className="flex-shrink-0 w-80 snap-center">
                     <DressCard 
