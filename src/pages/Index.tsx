@@ -160,6 +160,7 @@ export default function Index() {
 
       <Footer />
       </main>
+      
       <AIDressChatbot />
     </div>
   );
