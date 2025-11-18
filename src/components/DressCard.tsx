@@ -77,7 +77,7 @@ export default function DressCard({
           )}
         </div>
       )}
-      <div className="p-4">
+      <div className="p-4 min-h-[60px] flex items-center justify-center">
         <h3 className="font-semibold text-lg text-center">{name}</h3>
       </div>
     </Card>
