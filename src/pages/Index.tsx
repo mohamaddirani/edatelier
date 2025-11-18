@@ -6,6 +6,7 @@ import DressCard from '@/components/DressCard';
 import ContactForm from '@/components/ContactForm';
 import InteractiveBackground from '@/components/InteractiveBackground';
 import FAQ from '@/components/FAQ';
+import { AIDressChatbot } from '@/components/AIDressChatbot';
 import { Button } from '@/components/ui/button';
 import { Sparkles } from 'lucide-react';
 
@@ -151,6 +152,7 @@ export default function Index() {
       <FAQ />
 
       <Footer />
+      <AIDressChatbot />
     </div>
   );
 }
