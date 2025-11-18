@@ -89,9 +89,12 @@ export default function Index() {
           </div>
 
           {loading ? (
-            <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory">
+            <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory min-h-[482px]">
               {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div key={i} className="flex-shrink-0 w-80 h-[500px] bg-muted animate-pulse rounded-lg snap-center" />
+                <div key={i} className="flex-shrink-0 w-80">
+                  <div className="aspect-[3/4] bg-muted animate-pulse rounded-t-lg" />
+                  <div className="h-[60px] bg-muted/80 animate-pulse rounded-b-lg mt-1" />
+                </div>
               ))}
             </div>
           ) : featuredDresses.length === 0 ? (
@@ -101,7 +104,7 @@ export default function Index() {
               </p>
             </div>
           ) : (
-            <div className="relative group">
+            <div className="relative group min-h-[482px]">
               <button
                 onClick={() => {
                   const container = document.getElementById('featured-scroll');
@@ -114,13 +117,14 @@ export default function Index() {
                 </svg>
               </button>
               <div id="featured-scroll" className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory">
-                {featuredDresses.map((dress) => (
+                {featuredDresses.map((dress, index) => (
                   <div key={dress.id} className="flex-shrink-0 w-80 snap-center">
                     <DressCard 
                       id={dress.id}
                       name={dress.name}
                       image_url={dress.image_url}
                       is_available={dress.is_available}
+                      priority={index < 3}
                     />
                   </div>
                 ))}
