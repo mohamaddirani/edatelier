@@ -167,7 +167,7 @@ export default function DressDetail() {
             )}
 
             {dress.description && (
-              <div className="mt-6">
+              <div className="mt-6 md:hidden">
                 <h2 className="text-lg font-semibold mb-2">Description</h2>
                 <p className="text-muted-foreground">{dress.description}</p>
               </div>
@@ -180,6 +180,13 @@ export default function DressDetail() {
               <Badge variant="destructive" className="mb-4">
                 Unavailable
               </Badge>
+            )}
+
+            {dress.description && (
+              <div className="mb-6 hidden md:block">
+                <h2 className="text-lg font-semibold mb-2">Description</h2>
+                <p className="text-muted-foreground">{dress.description}</p>
+              </div>
             )}
 
             <div className="space-y-4 mb-6">
