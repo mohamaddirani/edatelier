@@ -188,6 +188,7 @@ export const AIDressChatbot = () => {
         onClick={() => setIsOpen(true)}
         className="fixed bottom-8 right-8 h-16 w-16 rounded-full shadow-2xl z-50 bg-gradient-to-br from-primary via-primary to-accent hover:shadow-accent/50 transition-all duration-300 hover:scale-105 group"
         size="icon"
+        aria-label="Open AI dress finder chatbot to help you find the perfect dress"
       >
         <Sparkles className="h-7 w-7 text-primary-foreground group-hover:rotate-12 transition-transform" />
       </Button>
@@ -212,6 +213,7 @@ export const AIDressChatbot = () => {
           size="icon"
           onClick={() => setIsOpen(false)}
           className="hover:bg-primary-foreground/10 text-primary-foreground h-9 w-9"
+          aria-label="Close chatbot"
         >
           <X className="h-5 w-5" />
         </Button>
@@ -357,6 +359,7 @@ export const AIDressChatbot = () => {
             disabled={isLoading || !input.trim()}
             size="icon"
             className="h-11 w-11 rounded-xl bg-gradient-to-br from-primary to-accent hover:shadow-lg hover:shadow-primary/20 transition-all duration-300 disabled:opacity-50"
+            aria-label="Send message"
           >
             <Send className="h-5 w-5" />
           </Button>
