@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -18,6 +19,32 @@ serve(async (req) => {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
+    // Create Supabase client to fetch dress inventory
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    // Fetch available dresses from the database
+    const { data: dresses, error: dbError } = await supabase
+      .from('dresses')
+      .select('id, name, description, category, color, size, condition, price_per_day, image_url')
+      .eq('is_available', true);
+
+    if (dbError) {
+      console.error('Database error:', dbError);
+    }
+
+    // Build dress catalog for AI context
+    const dressContext = dresses && dresses.length > 0 
+      ? `\n\nAVAILABLE DRESSES IN OUR COLLECTION:\n${dresses.map(d => 
+          `- ${d.name} (ID: ${d.id})
+  Category: ${d.category || 'N/A'} | Color: ${d.color || 'N/A'} | Size: ${d.size || 'N/A'}
+  Condition: ${d.condition || 'N/A'} | Price: ${d.price_per_day ? `$${d.price_per_day}/day` : 'Contact for pricing'}
+  Description: ${d.description || 'No description'}
+  View: https://08f5f13e-11b4-427a-b732-7f565abfa343.lovableproject.com/dress/${d.id}`
+        ).join('\n\n')}\n\nWhen a customer provides their preferences, recommend 2-3 specific dresses from the above list that match their criteria. Always include the dress name and provide the link so they can view it.`
+      : '\n\nCurrently no dresses are available in our inventory. Please apologize and ask the customer to check back soon or contact us directly.';
+
     const systemPrompt = `You are an expert fashion consultant for ED ATELIER, a luxury dress rental service. Your role is to help customers find the perfect dress for their special occasion.
 
 Key information about ED ATELIER:
@@ -31,9 +58,11 @@ Your approach:
 2. Inquire about style preferences (elegant, bold, classic, modern, etc.)
 3. Ask about color preferences
 4. Inquire about size requirements
-5. Provide personalized recommendations based on their answers
+5. Once you have their preferences, IMMEDIATELY recommend 2-3 specific dresses from our collection below that match their needs
 
-Be warm, professional, and enthusiastic. Help customers feel confident in their choice. Keep responses concise and conversational.`;
+${dressContext}
+
+Be warm, professional, and enthusiastic. Help customers feel confident in their choice. Keep responses concise and conversational. ALWAYS provide actual dress recommendations with links when you have the customer's preferences.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
