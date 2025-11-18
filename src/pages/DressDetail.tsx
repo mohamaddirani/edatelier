@@ -97,18 +97,18 @@ export default function DressDetail() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <main className="min-h-screen flex items-center justify-center">
         <div className="animate-pulse text-muted-foreground">Loading...</div>
-      </div>
+      </main>
     );
   }
 
   if (!dress) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center">
+      <main className="min-h-screen flex flex-col items-center justify-center">
         <p className="text-muted-foreground mb-4">Dress not found</p>
         <Button onClick={() => navigate('/')}>Go Back</Button>
-      </div>
+      </main>
     );
   }
 

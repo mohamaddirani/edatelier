@@ -53,6 +53,7 @@ export default function Index() {
       <Navbar />
       
       {/* Hero Section */}
+      <main>
       <section className="relative pt-32 pb-20 px-4">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-accent/5 -z-10" />
         <div className="container mx-auto text-center max-w-4xl">
@@ -111,6 +112,7 @@ export default function Index() {
                   if (container) container.scrollBy({ left: -350, behavior: 'smooth' });
                 }}
                 className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-background/80 backdrop-blur-sm border-2 border-border rounded-full p-3 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-background"
+                aria-label="Scroll left to view previous dresses"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -135,6 +137,7 @@ export default function Index() {
                   if (container) container.scrollBy({ left: 350, behavior: 'smooth' });
                 }}
                 className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-background/80 backdrop-blur-sm border-2 border-border rounded-full p-3 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-background"
+                aria-label="Scroll right to view more dresses"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -156,6 +159,7 @@ export default function Index() {
       <FAQ />
 
       <Footer />
+      </main>
       <AIDressChatbot />
     </div>
   );
