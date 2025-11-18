@@ -225,15 +225,16 @@ export const AIDressChatbot = () => {
             const whatsappMatch = msg.content.match(/(https:\/\/api\.whatsapp\.com\/send\?phone=\d+)/);
             const hasWhatsApp = whatsappMatch !== null;
             
-            // Check for dress view links with VIEWDRESS: prefix
-            const dressLinkRegex = /VIEWDRESS:(https:\/\/[^\s]+)/g;
-            const dressLinks = [...msg.content.matchAll(dressLinkRegex)];
+            // Check for dress cards with format: DRESSCARD:imageUrl|text|link
+            const dressCardRegex = /DRESSCARD:([^|]+)\|([^|]+)\|([^\s]+)/g;
+            const dressCards = [...msg.content.matchAll(dressCardRegex)];
             
             // Function to render text with markdown-style formatting
             const renderFormattedText = (text: string) => {
-              // Remove all URLs (both VIEWDRESS: and WhatsApp URLs)
-              let cleanText = text.replace(/VIEWDRESS:https:\/\/[^\s]+/g, '');
+              // Remove all dress cards and URLs
+              let cleanText = text.replace(/DRESSCARD:[^|]+\|[^|]+\|[^\s]+/g, '');
               cleanText = cleanText.replace(/https:\/\/api\.whatsapp\.com\/send\?phone=\d+/g, '');
+              cleanText = cleanText.trim();
               
               // Split by bold markers
               const parts = cleanText.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g);
@@ -266,16 +267,45 @@ export const AIDressChatbot = () => {
                         {renderFormattedText(msg.content)}
                       </p>
                       
-                      {dressLinks.map((match, i) => (
-                        <Button
-                          key={i}
-                          onClick={() => window.open(match[1], '_blank')}
-                          className="w-full bg-gradient-to-br from-primary via-primary to-accent hover:shadow-lg hover:shadow-primary/20 transition-all duration-300"
-                          size="sm"
-                        >
-                          View This Dress
-                        </Button>
-                      ))}
+                      {dressCards.map((match, i) => {
+                        const [, imageUrl, text, link] = match;
+                        // Render formatted text for dress card
+                        const formattedParts = text.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g);
+                        
+                        return (
+                          <div key={i} className="space-y-2 p-3 bg-background/50 rounded-xl border border-border/30">
+                            <div className="flex gap-3 items-start">
+                              {imageUrl && imageUrl !== 'null' && (
+                                <img 
+                                  src={imageUrl} 
+                                  alt="Dress preview"
+                                  className="w-16 h-16 object-cover rounded-lg flex-shrink-0"
+                                  onError={(e) => {
+                                    e.currentTarget.style.display = 'none';
+                                  }}
+                                />
+                              )}
+                              <p className="text-sm flex-1">
+                                {formattedParts.map((part, j) => {
+                                  if (part.startsWith('**') && part.endsWith('**')) {
+                                    return <strong key={j}>{part.slice(2, -2)}</strong>;
+                                  } else if (part.startsWith('*') && part.endsWith('*')) {
+                                    return <em key={j}>{part.slice(1, -1)}</em>;
+                                  }
+                                  return part;
+                                })}
+                              </p>
+                            </div>
+                            <Button
+                              onClick={() => window.open(link, '_blank')}
+                              className="w-full bg-gradient-to-br from-primary via-primary to-accent hover:shadow-lg hover:shadow-primary/20 transition-all duration-300"
+                              size="sm"
+                            >
+                              View This Dress
+                            </Button>
+                          </div>
+                        );
+                      })}
                       
                       {hasWhatsApp && (
                         <Button
