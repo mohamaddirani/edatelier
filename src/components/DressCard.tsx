@@ -55,10 +55,11 @@ export default function DressCard({
   }, []);
 
   useEffect(() => {
-    if (shouldLoad) {
+    if (shouldLoad && image_url && image_url !== primaryImage) {
+      // Only fetch from database if we don't have a valid image_url prop
       fetchPrimaryImage();
     }
-  }, [shouldLoad, id]);
+  }, [shouldLoad, id, image_url]);
 
   const fetchPrimaryImage = async () => {
     try {
@@ -72,7 +73,9 @@ export default function DressCard({
       
       if (data && data.length > 0) {
         const primary = data.find(img => img.is_primary) || data[0];
-        setPrimaryImage(primary.image_url);
+        if (primary.image_url !== image_url) {
+          setPrimaryImage(primary.image_url);
+        }
       }
     } catch (error) {
       console.error('Error fetching images:', error);
