@@ -15,16 +15,19 @@ interface ImageGalleryProps {
 export default function ImageGallery({ images, altText }: ImageGalleryProps) {
   const sortedImages = [...images].sort((a, b) => a.display_order - b.display_order);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   if (sortedImages.length === 0) {
     return null;
   }
 
   const goToPrevious = () => {
+    setImageLoaded(false);
     setCurrentIndex((prev) => (prev === 0 ? sortedImages.length - 1 : prev - 1));
   };
 
   const goToNext = () => {
+    setImageLoaded(false);
     setCurrentIndex((prev) => (prev === sortedImages.length - 1 ? 0 : prev + 1));
   };
 
@@ -32,10 +35,16 @@ export default function ImageGallery({ images, altText }: ImageGalleryProps) {
     <div className="space-y-3">
       {/* Main image */}
       <div className="relative aspect-[3/4] overflow-hidden rounded-lg bg-muted">
+        {!imageLoaded && (
+          <div className="absolute inset-0 bg-muted animate-pulse" />
+        )}
         <img
           src={sortedImages[currentIndex].image_url}
           alt={altText}
-          className="w-full h-full object-cover"
+          onLoad={() => setImageLoaded(true)}
+          className={`w-full h-full object-cover transition-opacity duration-500 ${
+            imageLoaded ? 'opacity-100' : 'opacity-0'
+          }`}
         />
         
         {/* Navigation arrows - only show if more than 1 image */}
@@ -67,7 +76,10 @@ export default function ImageGallery({ images, altText }: ImageGalleryProps) {
           {sortedImages.map((image, index) => (
             <button
               key={image.id}
-              onClick={() => setCurrentIndex(index)}
+              onClick={() => {
+                setImageLoaded(false);
+                setCurrentIndex(index);
+              }}
               className={`flex-shrink-0 w-16 h-20 rounded border-2 overflow-hidden transition-all ${
                 index === currentIndex
                   ? 'border-primary ring-2 ring-primary'
@@ -77,6 +89,7 @@ export default function ImageGallery({ images, altText }: ImageGalleryProps) {
               <img
                 src={image.image_url}
                 alt={`${altText} thumbnail ${index + 1}`}
+                loading="lazy"
                 className="w-full h-full object-cover"
               />
             </button>
