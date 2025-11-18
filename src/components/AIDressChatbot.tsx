@@ -244,7 +244,7 @@ export const AIDressChatbot = () => {
                       </p>
                       <Button
                         onClick={() => window.open(whatsappMatch[0], '_blank')}
-                        className="w-full bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 text-white shadow-md"
+                        className="w-full bg-gradient-to-br from-primary via-primary to-accent hover:shadow-lg hover:shadow-primary/20 transition-all duration-300"
                         size="sm"
                       >
                         Contact Designer on WhatsApp
