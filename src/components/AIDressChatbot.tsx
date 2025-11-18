@@ -229,7 +229,24 @@ export const AIDressChatbot = () => {
             const dressLinkRegex = /VIEWDRESS:(https:\/\/[^\s]+)/g;
             const dressLinks = [...msg.content.matchAll(dressLinkRegex)];
             
-            let displayContent = msg.content;
+            // Function to render text with markdown-style formatting
+            const renderFormattedText = (text: string) => {
+              // Remove all URLs (both VIEWDRESS: and WhatsApp URLs)
+              let cleanText = text.replace(/VIEWDRESS:https:\/\/[^\s]+/g, '');
+              cleanText = cleanText.replace(/https:\/\/api\.whatsapp\.com\/send\?phone=\d+/g, '');
+              
+              // Split by bold markers
+              const parts = cleanText.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g);
+              
+              return parts.map((part, i) => {
+                if (part.startsWith('**') && part.endsWith('**')) {
+                  return <strong key={i}>{part.slice(2, -2)}</strong>;
+                } else if (part.startsWith('*') && part.endsWith('*')) {
+                  return <em key={i}>{part.slice(1, -1)}</em>;
+                }
+                return part;
+              });
+            };
             
             return (
               <div
@@ -245,54 +262,29 @@ export const AIDressChatbot = () => {
                 >
                   {msg.role === "assistant" ? (
                     <div className="space-y-3">
-                      {/* Remove VIEWDRESS: markers from display */}
-                      {dressLinks.length > 0 && (
-                        <>
-                          <p className="text-sm leading-relaxed whitespace-pre-wrap">
-                            {displayContent.split(/VIEWDRESS:https:\/\/[^\s]+/)[0]}
-                          </p>
-                          {dressLinks.map((match, i) => (
-                            <Button
-                              key={i}
-                              onClick={() => window.open(match[1], '_blank')}
-                              className="w-full bg-gradient-to-br from-primary via-primary to-accent hover:shadow-lg hover:shadow-primary/20 transition-all duration-300"
-                              size="sm"
-                            >
-                              View This Dress
-                            </Button>
-                          ))}
-                          {displayContent.split(/VIEWDRESS:https:\/\/[^\s]+/).slice(-1)[0] && (
-                            <p className="text-sm leading-relaxed whitespace-pre-wrap">
-                              {displayContent.split(/VIEWDRESS:https:\/\/[^\s]+/).slice(-1)[0]}
-                            </p>
-                          )}
-                        </>
-                      )}
+                      <p className="text-sm leading-relaxed whitespace-pre-wrap">
+                        {renderFormattedText(msg.content)}
+                      </p>
+                      
+                      {dressLinks.map((match, i) => (
+                        <Button
+                          key={i}
+                          onClick={() => window.open(match[1], '_blank')}
+                          className="w-full bg-gradient-to-br from-primary via-primary to-accent hover:shadow-lg hover:shadow-primary/20 transition-all duration-300"
+                          size="sm"
+                        >
+                          View This Dress
+                        </Button>
+                      ))}
                       
                       {hasWhatsApp && (
-                        <>
-                          {dressLinks.length === 0 && (
-                            <p className="text-sm leading-relaxed whitespace-pre-wrap">
-                              {displayContent.split(whatsappMatch[0])[0]}
-                            </p>
-                          )}
-                          <Button
-                            onClick={() => window.open(whatsappMatch[0], '_blank')}
-                            className="w-full bg-gradient-to-br from-primary via-primary to-accent hover:shadow-lg hover:shadow-primary/20 transition-all duration-300"
-                            size="sm"
-                          >
-                            Contact Designer on WhatsApp
-                          </Button>
-                          {displayContent.split(whatsappMatch[0])[1] && (
-                            <p className="text-sm leading-relaxed whitespace-pre-wrap">
-                              {displayContent.split(whatsappMatch[0])[1]}
-                            </p>
-                          )}
-                        </>
-                      )}
-                      
-                      {!hasWhatsApp && dressLinks.length === 0 && (
-                        <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
+                        <Button
+                          onClick={() => window.open(whatsappMatch[0], '_blank')}
+                          className="w-full bg-gradient-to-br from-primary via-primary to-accent hover:shadow-lg hover:shadow-primary/20 transition-all duration-300"
+                          size="sm"
+                        >
+                          Contact Designer on WhatsApp
+                        </Button>
                       )}
                     </div>
                   ) : (
