@@ -1,1 +1,11 @@
-{"version": 2,"builds":[{"src":"package.json","use":"@vercel/static-build"}],"routes":[{"handle":"filesystem"},{"src":"/(.*)","dest":"/index.html"}]}
+{
+  "version": 2,
+  "builds": [
+    { "src": "package.json", "use": "@vercel/static-build" }
+  ],
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/images/(.*)", "headers": { "cache-control": "public, max-age=31536000, immutable" }, "dest": "/images/$1" },
+    { "src": "/(.*)", "dest": "/index.html" }
+  ]
+}
