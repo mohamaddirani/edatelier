@@ -21,6 +21,7 @@ interface Dress {
   image_url: string;
   is_available: boolean;
   created_at: string;
+  slug: string;
 }
 
 export default function Index() {
@@ -128,6 +129,7 @@ export default function Index() {
                   <div key={dress.id} className="flex-shrink-0 w-80 snap-center will-change-transform">
                     <DressCard 
                       id={dress.id}
+                      slug={dress.slug}
                       name={dress.name}
                       image_url={dress.image_url}
                       is_available={dress.is_available}

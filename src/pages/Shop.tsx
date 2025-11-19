@@ -29,6 +29,7 @@ interface Dress {
   condition: string | null;
   category: string | null;
   created_at: string;
+  slug: string;
 }
 
 const categories = [
@@ -372,6 +373,7 @@ export default function Shop() {
                     >
                       <DressCard
                         id={dress.id}
+                        slug={dress.slug}
                         name={dress.name}
                         image_url={dress.image_url}
                         is_available={dress.is_available}

@@ -38,20 +38,35 @@ export default function DressDetail() {
   useEffect(() => {
     if (id) {
       fetchDress();
-      fetchImages();
     }
   }, [id]);
 
   const fetchDress = async () => {
     try {
-      const { data, error } = await supabase
+      // First try to fetch by slug
+      let { data, error } = await supabase
         .from('dresses')
         .select('*')
-        .eq('id', id)
-        .single();
+        .eq('slug', id)
+        .maybeSingle();
+
+      // If not found by slug, try by UUID (backward compatibility)
+      if (!data && !error) {
+        const result = await supabase
+          .from('dresses')
+          .select('*')
+          .eq('id', id)
+          .maybeSingle();
+        data = result.data;
+        error = result.error;
+      }
 
       if (error) throw error;
-      setDress(data);
+      
+      if (data) {
+        setDress(data);
+        fetchImages(data.id);
+      }
     } catch (error) {
       console.error('Error fetching dress:', error);
     } finally {
@@ -59,7 +74,7 @@ export default function DressDetail() {
     }
   };
 
-  const fetchImages = async () => {
+  const fetchImages = async (dressId: string) => {
     try {
       const { data, error } = await supabase
         .from('dress_images')
@@ -74,7 +89,7 @@ export default function DressDetail() {
         const { data: dressData } = await supabase
           .from('dresses')
           .select('image_url')
-          .eq('id', id)
+          .eq('id', dressId)
           .single();
 
         if (dressData?.image_url) {

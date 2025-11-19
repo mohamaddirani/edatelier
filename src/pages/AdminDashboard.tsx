@@ -245,6 +245,24 @@ export default function AdminDashboard() {
       if (editingDressId) {
         // UPDATE EXISTING DRESS
         
+        // Generate new slug if name changed
+        const { data: currentDress } = await supabase
+          .from('dresses')
+          .select('name')
+          .eq('id', editingDressId)
+          .single();
+        
+        let slugUpdate = {};
+        if (currentDress && currentDress.name !== validation.data.name) {
+          const { data: slugData } = await supabase.rpc('generate_dress_slug', {
+            dress_name: validation.data.name,
+            created_date: new Date().toISOString()
+          });
+          if (slugData) {
+            slugUpdate = { slug: slugData };
+          }
+        }
+        
         // Delete marked images
         if (imagesToDelete.length > 0) {
           const { error: deleteError } = await supabase
@@ -286,6 +304,7 @@ export default function AdminDashboard() {
             condition: validation.data.condition,
             category: validation.data.category,
             image_url: primaryImageUrl,
+            ...slugUpdate,
           })
           .eq('id', editingDressId);
 
@@ -325,6 +344,12 @@ export default function AdminDashboard() {
       } else {
         // CREATE NEW DRESS
         
+        // Generate slug for new dress
+        const { data: slugData } = await supabase.rpc('generate_dress_slug', {
+          dress_name: validation.data.name,
+          created_date: new Date().toISOString()
+        });
+        
         // Upload all images
         const imageUrls = await Promise.all(imageFiles.map(file => uploadImage(file)));
 
@@ -340,6 +365,7 @@ export default function AdminDashboard() {
             condition: validation.data.condition,
             category: validation.data.category,
             image_url: imageUrls[primaryImageIndex],
+            slug: slugData,
           }])
           .select()
           .single();
