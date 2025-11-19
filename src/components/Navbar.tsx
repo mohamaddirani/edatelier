@@ -12,12 +12,17 @@ export default function Navbar() {
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
       <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4">
         <div className="flex items-center justify-between">
-          <Link to="/" className="flex items-center">
+          <Link to="/" className="flex items-center gap-3">
+            <img 
+              src="/logo.ico" 
+              alt="ED ATELIER Logo" 
+              className="h-10 sm:h-12 w-auto object-contain"
+            />
             <div>
               <h1 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
                 ED ATELIER
               </h1>
-              <p className="text-[10px] sm:text-xs text-muted-foreground">by enaam dirani</p>
+              <p className="text-[10px] sm:text-xs text-foreground/80 font-medium">by enaam dirani</p>
             </div>
           </Link>
 

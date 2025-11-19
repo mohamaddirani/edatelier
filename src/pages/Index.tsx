@@ -63,7 +63,7 @@ export default function Index() {
             <span className="text-sm font-medium text-primary">Exquisite Designer Collections</span>
           </div>
           <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
-            Elegance for Every
+            <span className="block">Elegance for Every</span>
             <span className="block bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
               Special Occasion
             </span>
