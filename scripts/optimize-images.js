@@ -1,7 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 import sharp from 'sharp';
-import { glob } from 'glob';
+import pkg from 'glob';
+const { glob } = pkg; // or just use pkg directly as `glob`
 
 const cwd = process.cwd();
 const INPUT_DIR = path.join(cwd, 'assets', 'images', 'original');
