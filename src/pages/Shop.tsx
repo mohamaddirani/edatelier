@@ -32,11 +32,11 @@ interface Dress {
 }
 
 const categories = [
-  { id: 'all', label: 'All' },
-  { id: 'white-dress', label: 'White Dress' },
-  { id: 'classic-dress', label: 'Classic Dress' },
-  { id: 'clutch', label: 'Clutch' },
-  { id: 'scarf', label: 'Scarf' },
+  { id: 'all', label: 'All', emptyLabel: 'dresses' },
+  { id: 'white-dress', label: 'White Dress', emptyLabel: 'White Dresses' },
+  { id: 'classic-dress', label: 'Classic Dress', emptyLabel: 'Classic Dresses' },
+  { id: 'clutch', label: 'Clutch', emptyLabel: 'Clutches' },
+  { id: 'scarf', label: 'Scarf', emptyLabel: 'Scarves' },
 ];
 
 export default function Shop() {
@@ -48,6 +48,45 @@ export default function Shop() {
   const [availableColors, setAvailableColors] = useState<string[]>([]);
   const [showFilters, setShowFilters] = useState(false);
   const [scrollPosition, setScrollPosition] = useState(0);
+
+  const formatColorName = (color: string) =>
+    color
+      .replace(/-/g, ' ')
+      .split(' ')
+      .filter(Boolean)
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+
+  const getFilterDescription = () => {
+    const parts: string[] = [];
+    const categoryInfo = categories.find((category) => category.id === selectedCategory);
+
+    if (selectedCategory !== 'all' && categoryInfo) {
+      parts.push(categoryInfo.emptyLabel || categoryInfo.label);
+    }
+
+    if (selectedColor !== 'all') {
+      parts.push(`${formatColorName(selectedColor)} color`);
+    }
+
+    if (selectedCondition) {
+      parts.push(selectedCondition === 'new' ? 'new condition' : 'pre-loved condition');
+    }
+
+    if (parts.length === 0) {
+      return 'dresses';
+    }
+
+    if (parts.length === 1) {
+      return parts[0];
+    }
+
+    if (parts.length === 2) {
+      return `${parts[0]} and ${parts[1]}`;
+    }
+
+    return `${parts.slice(0, -1).join(', ')}, and ${parts[parts.length - 1]}`;
+  };
 
   // Save scroll position before navigating away
   useEffect(() => {
@@ -283,7 +322,7 @@ export default function Shop() {
                   <Filter className="w-8 h-8 text-muted-foreground" />
                 </div>
                 <p className="text-muted-foreground text-lg mb-4">
-                  No dresses found with the selected filters
+                  No {getFilterDescription()} found — please adjust your filters or contact our designer for your custom needs.
                 </p>
                 <Button onClick={clearFilters} variant="outline">
                   Clear Filters

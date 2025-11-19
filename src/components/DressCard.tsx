@@ -2,40 +2,6 @@ import { useEffect, useState, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { getTransformedPublicUrl } from '@/lib/imageUrl';
-
-const SUPABASE_PUBLIC_PREFIX = '/storage/v1/object/public/';
-
-const resolveBucketPath = (value: string) => {
-  if (!value) {
-    return null;
-  }
-
-  try {
-    const parsed = new URL(value);
-    const idx = parsed.pathname.indexOf(SUPABASE_PUBLIC_PREFIX);
-    if (idx !== -1) {
-      const relative = parsed.pathname.slice(idx + SUPABASE_PUBLIC_PREFIX.length);
-      const [bucket, ...pathParts] = relative.split('/');
-      if (bucket && pathParts.length) {
-        return { bucket, path: pathParts.join('/') };
-      }
-    }
-  } catch {
-    // value is likely a relative path; fall through.
-  }
-
-  const normalized = value.replace(/^\/+/, '');
-  const firstSlash = normalized.indexOf('/');
-  if (firstSlash > 0) {
-    return {
-      bucket: normalized.slice(0, firstSlash),
-      path: normalized.slice(firstSlash + 1),
-    };
-  }
-
-  return null;
-};
 
 interface DressCardProps {
   id: string;
@@ -67,23 +33,7 @@ export default function DressCard({
     setImageLoaded(false);
   }, [image_url]);
 
-  const optimizedUrl = useMemo(() => {
-    if (!image_url) return '';
-
-    const bucketInfo = resolveBucketPath(image_url);
-    if (!bucketInfo) {
-      return image_url;
-    }
-
-    return getTransformedPublicUrl(bucketInfo.bucket, bucketInfo.path, {
-      width: 316,
-      height: 421,
-      quality: 75,
-      resize: 'cover',
-    });
-  }, [image_url]);
-
-  const resolvedSrc = optimizedUrl || image_url;
+  const resolvedSrc = useMemo(() => image_url || '', [image_url]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(

@@ -1,4 +1,5 @@
 import { FormEvent, useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import Navbar from '@/components/Navbar';
@@ -40,6 +41,7 @@ interface Dress {
 }
 
 export default function AdminDashboard() {
+  const navigate = useNavigate();
   const { user, isAdmin, loading: authLoading, signIn } = useAuth();
   const { toast } = useToast();
   const compressionWarningShown = useRef(false);
@@ -545,7 +547,10 @@ export default function AdminDashboard() {
       <Navbar />
       
       <main className="container mx-auto px-4 pt-32 pb-20">
-        <h1 className="text-4xl font-bold mb-8">Admin Dashboard</h1>
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
+          <h1 className="text-4xl font-bold">Admin Dashboard</h1>
+          <Button variant="outline" onClick={() => navigate('/')}>Return to Homepage</Button>
+        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Add New Dress Form */}
