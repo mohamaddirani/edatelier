@@ -17,29 +17,5 @@ export default defineConfig(({ mode }) => ({
   },
   build: {
     chunkSizeWarningLimit: 900,
-    rollupOptions: {
-      output: {
-        manualChunks(id) {
-          if (id.includes("node_modules")) {
-            if (id.includes("react")) {
-              return "vendor-react";
-            }
-            if (id.includes("@supabase")) {
-              return "vendor-supabase";
-            }
-            if (id.includes("@radix-ui")) {
-              return "vendor-radix";
-            }
-            if (id.includes("lucide-react")) {
-              return "vendor-icons";
-            }
-            if (id.includes("@tanstack")) {
-              return "vendor-query";
-            }
-            return "vendor-misc";
-          }
-        },
-      },
-    },
   },
 }));
