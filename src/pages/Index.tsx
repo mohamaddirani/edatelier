@@ -69,8 +69,8 @@ export default function Index() {
             </span>
           </h1>
           <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Discover our curated collection of stunning designer dresses. 
-            Rent the perfect gown for your unforgettable moments.
+            <span className="block">Discover our curated collection of stunning designer dresses.</span>
+            <span className="block">Rent the perfect gown for your unforgettable moments.</span>
           </p>
           <Button size="lg" className="shadow-elegant" onClick={() => window.location.href = '/shop'}>
             Browse Collection

@@ -16,7 +16,10 @@ export default function Navbar() {
             <img 
               src="/logo.ico" 
               alt="ED ATELIER Logo" 
-              className="h-10 sm:h-12 w-auto object-contain"
+              className="h-10 sm:h-12 w-auto object-contain brightness-[0.85] contrast-125 saturate-[1.1]"
+              style={{
+                filter: 'hue-rotate(-10deg)'
+              }}
             />
             <div>
               <h1 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
