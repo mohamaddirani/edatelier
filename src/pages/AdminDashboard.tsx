@@ -562,6 +562,14 @@ export default function AdminDashboard() {
                 <Button type="submit" className="w-full" disabled={authSubmitting}>
                   {authSubmitting ? 'Signing in...' : 'Sign In'}
                 </Button>
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  className="w-full" 
+                  onClick={() => navigate('/')}
+                >
+                  Return to Home
+                </Button>
               </form>
             </CardContent>
           </Card>

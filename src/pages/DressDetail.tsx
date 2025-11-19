@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Badge } from '@/components/ui/badge';
@@ -34,6 +34,8 @@ export default function DressDetail() {
   const [selectedImage, setSelectedImage] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [zoomOpen, setZoomOpen] = useState(false);
+  const [zoomPosition, setZoomPosition] = useState({ x: 50, y: 50 });
+  const zoomImageRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (id) {
@@ -251,11 +253,24 @@ export default function DressDetail() {
       {/* Image Zoom Dialog */}
       <Dialog open={zoomOpen} onOpenChange={setZoomOpen}>
         <DialogContent className="max-w-7xl w-[95vw] h-[95vh] p-0 overflow-hidden">
-          <div className="relative w-full h-full flex items-center justify-center bg-background">
-            <img
-              src={selectedImage}
-              alt={dress.name}
-              className="max-w-full max-h-full object-contain"
+          <div 
+            ref={zoomImageRef}
+            className="relative w-full h-full flex items-center justify-center bg-background cursor-crosshair overflow-hidden"
+            onMouseMove={(e) => {
+              if (!zoomImageRef.current) return;
+              const rect = zoomImageRef.current.getBoundingClientRect();
+              const x = ((e.clientX - rect.left) / rect.width) * 100;
+              const y = ((e.clientY - rect.top) / rect.height) * 100;
+              setZoomPosition({ x, y });
+            }}
+          >
+            <div 
+              className="w-full h-full bg-no-repeat"
+              style={{
+                backgroundImage: `url(${selectedImage})`,
+                backgroundSize: '200%',
+                backgroundPosition: `${zoomPosition.x}% ${zoomPosition.y}%`,
+              }}
             />
           </div>
         </DialogContent>
