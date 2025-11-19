@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 
 interface DressCardProps {
   id: string;
+  slug: string;
   name: string;
   image_url: string;
   is_available: boolean;
@@ -13,6 +14,7 @@ interface DressCardProps {
 
 export default function DressCard({ 
   id,
+  slug,
   name, 
   image_url, 
   is_available,
@@ -60,7 +62,7 @@ export default function DressCard({
   return (
     <Card 
       className="overflow-hidden group hover:shadow-elegant transition-shadow duration-300 cursor-pointer"
-      onClick={() => navigate(`/dress/${id}`)}
+      onClick={() => navigate(`/dress/${slug || id}`)}
     >
       <div className="relative" ref={imgRef}>
         <div className="w-full h-[421px] overflow-hidden bg-muted relative">
