@@ -32,11 +32,11 @@ interface Dress {
 }
 
 const categories = [
-  { id: 'all', label: 'All', emptyLabel: 'dresses' },
-  { id: 'white-dress', label: 'White Dress', emptyLabel: 'White Dresses' },
-  { id: 'classic-dress', label: 'Classic Dress', emptyLabel: 'Classic Dresses' },
-  { id: 'clutch', label: 'Clutch', emptyLabel: 'Clutches' },
-  { id: 'scarf', label: 'Scarf', emptyLabel: 'Scarves' },
+  { id: 'all', label: 'All', emptyLabel: 'dresses', type: 'dress' },
+  { id: 'white-dress', label: 'White Dress', emptyLabel: 'White Dresses', type: 'dress' },
+  { id: 'classic-dress', label: 'Classic Dress', emptyLabel: 'Classic Dresses', type: 'dress' },
+  { id: 'clutch', label: 'Clutch', emptyLabel: 'Clutches', type: 'accessory' },
+  { id: 'scarf', label: 'Scarf', emptyLabel: 'Scarves', type: 'accessory' },
 ];
 
 export default function Shop() {
@@ -86,6 +86,24 @@ export default function Shop() {
     }
 
     return `${parts.slice(0, -1).join(', ')}, and ${parts[parts.length - 1]}`;
+  };
+
+  const getEmptyStateMessage = () => {
+    const categoryInfo = categories.find((category) => category.id === selectedCategory);
+    const categoryType = categoryInfo?.type || 'dress';
+    const filterDesc = getFilterDescription();
+
+    if (categoryType === 'accessory') {
+      return {
+        message: `We couldn't find any ${filterDesc} in this selection.`,
+        subMessage: "If you're looking for something special, our designer can provide it upon request."
+      };
+    } else {
+      return {
+        message: `No matching ${filterDesc} at the moment.`,
+        subMessage: "Need something unique? Our designer can create a custom look tailored for you."
+      };
+    }
   };
 
   // Save scroll position before navigating away
@@ -321,8 +339,11 @@ export default function Shop() {
                 <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-muted mb-4">
                   <Filter className="w-8 h-8 text-muted-foreground" />
                 </div>
-                <p className="text-muted-foreground text-lg mb-4">
-                  No {getFilterDescription()} found — please adjust your filters or contact our designer for your custom needs.
+                <p className="text-muted-foreground text-lg mb-2">
+                  {getEmptyStateMessage().message}
+                </p>
+                <p className="text-muted-foreground text-base mb-4">
+                  {getEmptyStateMessage().subMessage}
                 </p>
                 <Button onClick={clearFilters} variant="outline">
                   Clear Filters
