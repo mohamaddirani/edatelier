@@ -17,7 +17,7 @@ export type TransformOptions = {
  * and returns data.publicUrl.
  */
 export function getTransformedPublicUrl(bucket: string, path: string, transform?: TransformOptions) {
-  const { data } = supabase.storage.from(bucket).getPublicUrl(path, { transform });
+  const { data } = supabase.storage.from(bucket).getPublicUrl(path, transform ? { transform: transform as any } : undefined);
   return data.publicUrl;
 }
 
