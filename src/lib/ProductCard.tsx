@@ -1,5 +1,5 @@
 import React from 'react';
-import { getTransformedPublicUrl } from '../utils/imageUrl';
+import { getTransformedPublicUrl } from './imageUrl';
 
 type Props = {
   title: string;

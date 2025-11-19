@@ -6,8 +6,8 @@ export type TransformOptions = {
   quality?: number; // 1-100
   // Supabase will auto-select efficient formats (WebP/AVIF) if you omit format.
   // Use format: 'origin' to preserve original file format.
-  format?: 'origin' | string;
-  resize?: 'cover' | 'contain' | 'fill' | string;
+  format?: 'origin';
+  resize?: 'cover' | 'contain' | 'fill';
   [key: string]: unknown;
 };
 
