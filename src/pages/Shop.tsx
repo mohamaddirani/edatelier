@@ -345,9 +345,16 @@ export default function Shop() {
                 <p className="text-muted-foreground text-base mb-4">
                   {getEmptyStateMessage().subMessage}
                 </p>
-                <Button onClick={clearFilters} variant="outline">
-                  Clear Filters
-                </Button>
+                <div className="flex gap-3 justify-center">
+                  <Button onClick={clearFilters} variant="outline">
+                    Clear Filters
+                  </Button>
+                  <Button asChild>
+                    <a href="https://api.whatsapp.com/send?phone=9613836748" target="_blank" rel="noopener noreferrer">
+                      Contact Designer
+                    </a>
+                  </Button>
+                </div>
               </div>
             ) : (
               <>
