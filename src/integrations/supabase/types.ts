@@ -86,6 +86,7 @@ export type Database = {
           name: string
           price_per_day: number | null
           size: string | null
+          slug: string
           updated_at: string
         }
         Insert: {
@@ -100,6 +101,7 @@ export type Database = {
           name: string
           price_per_day?: number | null
           size?: string | null
+          slug: string
           updated_at?: string
         }
         Update: {
@@ -114,6 +116,7 @@ export type Database = {
           name?: string
           price_per_day?: number | null
           size?: string | null
+          slug?: string
           updated_at?: string
         }
         Relationships: []
@@ -186,6 +189,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      generate_dress_slug: {
+        Args: { created_date: string; dress_name: string }
+        Returns: string
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
