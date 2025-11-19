@@ -1,21 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 
-/**
- * Read env var names used by Next.js and Vite.
- * - NEXT_PUBLIC_* is for Next.js
- * - VITE_* is for Vite
- *
- * Avoid throwing during SSR — only fail fast in the browser (dev).
- */
-const SUPABASE_URL =
-  process.env.NEXT_PUBLIC_SUPABASE_URL ??
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ((typeof import.meta !== 'undefined' ? (import.meta as any).env?.VITE_SUPABASE_URL : undefined) as string | undefined);
-
-const SUPABASE_ANON_KEY =
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ??
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ((typeof import.meta !== 'undefined' ? (import.meta as any).env?.VITE_SUPABASE_ANON_KEY : undefined) as string | undefined);
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 if ((!SUPABASE_URL || !SUPABASE_ANON_KEY) && typeof window !== 'undefined') {
   // Fail fast in the browser during development so you don't accidentally call Supabase without keys.
