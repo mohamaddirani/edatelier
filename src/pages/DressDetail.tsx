@@ -79,7 +79,7 @@ export default function DressDetail() {
       const { data, error } = await supabase
         .from('dress_images')
         .select('*')
-        .eq('dress_id', id)
+        .eq('dress_id', dressId)
         .order('display_order', { ascending: true });
 
       if (error) throw error;
