@@ -245,17 +245,18 @@ export default function AdminDashboard() {
       if (editingDressId) {
         // UPDATE EXISTING DRESS
         
-        // Generate new slug if name changed
+        // Generate new slug if name or color changed
         const { data: currentDress } = await supabase
           .from('dresses')
-          .select('name')
+          .select('name, color')
           .eq('id', editingDressId)
           .single();
         
         let slugUpdate = {};
-        if (currentDress && currentDress.name !== validation.data.name) {
+        if (currentDress && (currentDress.name !== validation.data.name || currentDress.color !== validation.data.color)) {
           const { data: slugData } = await supabase.rpc('generate_dress_slug', {
             dress_name: validation.data.name,
+            dress_color: validation.data.color,
             created_date: new Date().toISOString()
           });
           if (slugData) {
@@ -347,6 +348,7 @@ export default function AdminDashboard() {
         // Generate slug for new dress
         const { data: slugData } = await supabase.rpc('generate_dress_slug', {
           dress_name: validation.data.name,
+          dress_color: validation.data.color,
           created_date: new Date().toISOString()
         });
         
