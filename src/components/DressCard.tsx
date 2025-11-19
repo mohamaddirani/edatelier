@@ -1,8 +1,41 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { getTransformedPublicUrl } from '@/lib/imageUrl';
+
+const SUPABASE_PUBLIC_PREFIX = '/storage/v1/object/public/';
+
+const resolveBucketPath = (value: string) => {
+  if (!value) {
+    return null;
+  }
+
+  try {
+    const parsed = new URL(value);
+    const idx = parsed.pathname.indexOf(SUPABASE_PUBLIC_PREFIX);
+    if (idx !== -1) {
+      const relative = parsed.pathname.slice(idx + SUPABASE_PUBLIC_PREFIX.length);
+      const [bucket, ...pathParts] = relative.split('/');
+      if (bucket && pathParts.length) {
+        return { bucket, path: pathParts.join('/') };
+      }
+    }
+  } catch {
+    // value is likely a relative path; fall through.
+  }
+
+  const normalized = value.replace(/^\/+/, '');
+  const firstSlash = normalized.indexOf('/');
+  if (firstSlash > 0) {
+    return {
+      bucket: normalized.slice(0, firstSlash),
+      path: normalized.slice(firstSlash + 1),
+    };
+  }
+
+  return null;
+};
 
 interface DressCardProps {
   id: string;
@@ -10,13 +43,6 @@ interface DressCardProps {
   image_url: string;
   is_available: boolean;
   priority?: boolean;
-}
-
-interface DressImage {
-  id: string;
-  image_url: string;
-  is_primary: boolean;
-  display_order: number;
 }
 
 export default function DressCard({ 
@@ -27,10 +53,37 @@ export default function DressCard({
   priority = false
 }: DressCardProps) {
   const navigate = useNavigate();
-  const [primaryImage, setPrimaryImage] = useState<string>(image_url);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [shouldLoad, setShouldLoad] = useState(priority);
   const imgRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (priority) {
+      setShouldLoad(true);
+    }
+  }, [priority]);
+
+  useEffect(() => {
+    setImageLoaded(false);
+  }, [image_url]);
+
+  const optimizedUrl = useMemo(() => {
+    if (!image_url) return '';
+
+    const bucketInfo = resolveBucketPath(image_url);
+    if (!bucketInfo) {
+      return image_url;
+    }
+
+    return getTransformedPublicUrl(bucketInfo.bucket, bucketInfo.path, {
+      width: 316,
+      height: 421,
+      quality: 75,
+      resize: 'cover',
+    });
+  }, [image_url]);
+
+  const resolvedSrc = optimizedUrl || image_url;
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -43,7 +96,7 @@ export default function DressCard({
         });
       },
       {
-        rootMargin: '50px',
+        rootMargin: '120px',
       }
     );
 
@@ -54,34 +107,6 @@ export default function DressCard({
     return () => observer.disconnect();
   }, []);
 
-  useEffect(() => {
-    if (shouldLoad && image_url && image_url !== primaryImage) {
-      // Only fetch from database if we don't have a valid image_url prop
-      fetchPrimaryImage();
-    }
-  }, [shouldLoad, id, image_url]);
-
-  const fetchPrimaryImage = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('dress_images')
-        .select('*')
-        .eq('dress_id', id)
-        .order('display_order', { ascending: true });
-
-      if (error) throw error;
-      
-      if (data && data.length > 0) {
-        const primary = data.find(img => img.is_primary) || data[0];
-        if (primary.image_url !== image_url) {
-          setPrimaryImage(primary.image_url);
-        }
-      }
-    } catch (error) {
-      console.error('Error fetching images:', error);
-    }
-  };
-
   return (
     <Card 
       className="overflow-hidden group hover:shadow-elegant transition-shadow duration-300 cursor-pointer"
@@ -91,14 +116,18 @@ export default function DressCard({
         <div className="w-full h-[421px] overflow-hidden bg-muted relative">
           {shouldLoad ? (
             <>
-              <div className="absolute inset-0 bg-muted" />
+              <div
+                className={`absolute inset-0 bg-muted transition-opacity duration-300 ${
+                  imageLoaded ? 'opacity-0' : 'opacity-100'
+                }`}
+              />
               <img
-                src={primaryImage}
+                src={resolvedSrc}
                 alt={name}
                 loading={priority ? "eager" : "lazy"}
                 decoding="async"
-                width="316"
-                height="421"
+                width={316}
+                height={421}
                 onLoad={() => setImageLoaded(true)}
                 className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />

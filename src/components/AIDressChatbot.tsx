@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
@@ -19,13 +19,19 @@ export const AIDressChatbot = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
+  const scrollToBottom = useCallback(() => {
+    if (!messagesEndRef.current) return;
+    requestAnimationFrame(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    });
+  }, []);
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    const timeout = window.setTimeout(() => {
+      scrollToBottom();
+    }, 60);
+    return () => window.clearTimeout(timeout);
+  }, [messages, scrollToBottom]);
 
   useEffect(() => {
     if (isOpen && messages.length === 0) {

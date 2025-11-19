@@ -1,5 +1,4 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { FormEvent, useEffect, useRef, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import Navbar from '@/components/Navbar';
@@ -10,6 +9,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useToast } from '@/hooks/use-toast';
 import { Trash2, Upload, Pencil } from 'lucide-react';
 import { z } from 'zod';
+import imageCompression from 'browser-image-compression';
+
+const adminLoginSchema = z.object({
+  email: z.string().email({ message: "Invalid email address" }),
+  password: z.string().min(6, { message: "Password must be at least 6 characters" }),
+});
 
 const dressSchema = z.object({
   name: z.string().trim().min(1, { message: "Name is required" }).max(100),
@@ -35,12 +40,13 @@ interface Dress {
 }
 
 export default function AdminDashboard() {
-  const { user, isAdmin, loading: authLoading } = useAuth();
-  const navigate = useNavigate();
+  const { user, isAdmin, loading: authLoading, signIn } = useAuth();
   const { toast } = useToast();
+  const compressionWarningShown = useRef(false);
   const [dresses, setDresses] = useState<Dress[]>([]);
   const [loading, setLoading] = useState(false);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const [primaryImageIndex, setPrimaryImageIndex] = useState(0);
   const [editingDressId, setEditingDressId] = useState<string | null>(null);
   const [existingImages, setExistingImages] = useState<Array<{
@@ -59,18 +65,29 @@ export default function AdminDashboard() {
     condition: 'new' as 'new' | 'used',
     category: 'dress',
   });
-
-  useEffect(() => {
-    if (!authLoading && (!user || !isAdmin)) {
-      navigate('/auth');
-    }
-  }, [user, isAdmin, authLoading, navigate]);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [authSubmitting, setAuthSubmitting] = useState(false);
 
   useEffect(() => {
     if (user && isAdmin) {
       fetchDresses();
     }
   }, [user, isAdmin]);
+
+  useEffect(() => {
+    if (imageFiles.length === 0) {
+      setPreviewUrls([]);
+      return;
+    }
+
+    const urls = imageFiles.map((file) => URL.createObjectURL(file));
+    setPreviewUrls(urls);
+
+    return () => {
+      urls.forEach((url) => URL.revokeObjectURL(url));
+    };
+  }, [imageFiles]);
 
   const fetchDresses = async () => {
     try {
@@ -86,14 +103,60 @@ export default function AdminDashboard() {
     }
   };
 
+  const optimizeImageFile = async (file: File) => {
+    try {
+      const optimized = await imageCompression(file, {
+        maxSizeMB: 3,
+        maxWidthOrHeight: 2200,
+        useWebWorker: true,
+        fileType: 'image/webp',
+        initialQuality: 0.85,
+      });
+
+      if (optimized instanceof File) {
+        return optimized;
+      }
+
+      return new File([optimized], file.name.replace(/\.[^.]+$/, '.webp'), {
+        type: 'image/webp',
+        lastModified: Date.now(),
+      });
+    } catch (error) {
+      console.error('Image optimization failed', error);
+      if (!compressionWarningShown.current) {
+        compressionWarningShown.current = true;
+        toast({
+          title: 'Optimization warning',
+          description: 'Could not compress at least one image. Uploading original files instead.',
+        });
+      }
+      return file;
+    }
+  };
+
+  const generateFileName = (extension: string) => {
+    const safeExt = extension || 'webp';
+    const unique = (typeof crypto !== 'undefined' && 'randomUUID' in crypto)
+      ? crypto.randomUUID()
+      : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    return `${unique}.${safeExt}`;
+  };
+
   const uploadImage = async (file: File): Promise<string> => {
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${Math.random()}.${fileExt}`;
+    const preparedFile = await optimizeImageFile(file);
+    const inferredExt = preparedFile.type === 'image/webp'
+      ? 'webp'
+      : (preparedFile.name.split('.').pop() || file.name.split('.').pop() || 'jpg');
+    const fileName = generateFileName(inferredExt);
     const filePath = `${fileName}`;
 
     const { error: uploadError } = await supabase.storage
       .from('dress-images')
-      .upload(filePath, file);
+      .upload(filePath, preparedFile, {
+        contentType: preparedFile.type || undefined,
+        cacheControl: '3600',
+        upsert: false,
+      });
 
     if (uploadError) throw uploadError;
 
@@ -104,7 +167,33 @@ export default function AdminDashboard() {
     return publicUrl;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleAdminSignIn = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const validation = adminLoginSchema.safeParse({ email, password });
+    if (!validation.success) {
+      toast({
+        title: "Validation Error",
+        description: validation.error.errors[0].message,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setAuthSubmitting(true);
+    try {
+      const { error } = await signIn(email, password);
+      if (!error) {
+        toast({ title: "Signed in", description: "Admin access granted." });
+        setEmail('');
+        setPassword('');
+      }
+    } finally {
+      setAuthSubmitting(false);
+    }
+  };
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
     const priceValue = formData.price_per_day ? parseFloat(formData.price_per_day) : undefined;
@@ -380,12 +469,60 @@ export default function AdminDashboard() {
     }
   };
 
+  const notAuthorized = !!user && !isAdmin;
+
   if (authLoading) {
-    return <main className="min-h-screen flex items-center justify-center">Loading...</main>;
+    return (
+      <div className="min-h-screen flex flex-col bg-background">
+        <Navbar />
+        <main className="flex-1 flex items-center justify-center">
+          <p className="text-muted-foreground">Checking admin access...</p>
+        </main>
+      </div>
+    );
   }
 
   if (!user || !isAdmin) {
-    return null;
+    return (
+      <div className="min-h-screen flex flex-col bg-gradient-to-br from-primary/5 via-background to-accent/5">
+        <Navbar />
+        <main className="flex-1 flex items-center justify-center px-4">
+          <Card className="w-full max-w-md shadow-elegant">
+            <CardHeader className="text-center">
+              <CardTitle className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                ED ATELIER
+              </CardTitle>
+              <CardDescription>
+                {notAuthorized
+                  ? 'This account is missing admin permissions. Please sign in with an authorized email.'
+                  : 'Admin Sign In'}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleAdminSignIn} className="space-y-4">
+                <Input
+                  type="email"
+                  placeholder="Email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+                <Input
+                  type="password"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+                <Button type="submit" className="w-full" disabled={authSubmitting}>
+                  {authSubmitting ? 'Signing in...' : 'Sign In'}
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+        </main>
+      </div>
+    );
   }
 
   return (
@@ -544,6 +681,7 @@ export default function AdminDashboard() {
                       </p>
                       <div className="flex gap-2 flex-wrap">
                         {imageFiles.map((file, index) => {
+                          const previewSrc = previewUrls[index];
                           const globalIndex = existingImages.filter(img => !imagesToDelete.includes(img.id)).length + index;
                           return (
                             <button
@@ -557,7 +695,7 @@ export default function AdminDashboard() {
                               }`}
                             >
                               <img
-                                src={URL.createObjectURL(file)}
+                                src={previewSrc || ''}
                                 alt={`Preview ${index + 1}`}
                                 className="w-full h-full object-cover"
                               />

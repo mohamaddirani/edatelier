@@ -93,7 +93,7 @@ export default function Index() {
           {loading ? (
             <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory h-[481px]">
               {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div key={i} className="flex-shrink-0 w-80 snap-center">
+                <div key={i} className="flex-shrink-0 w-80 snap-center will-change-transform">
                   <Card className="overflow-hidden">
                     <div className="w-full h-[421px] bg-muted" />
                     <div className="p-4 h-[60px] flex items-center justify-center">
@@ -116,7 +116,7 @@ export default function Index() {
                   const container = document.getElementById('featured-scroll');
                   if (container) container.scrollBy({ left: -350, behavior: 'smooth' });
                 }}
-                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-background/80 backdrop-blur-sm border-2 border-border rounded-full p-3 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-background"
+                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-background/80 border-2 border-border rounded-full p-3 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-background"
                 aria-label="Scroll left to view previous dresses"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -125,7 +125,7 @@ export default function Index() {
               </button>
               <div id="featured-scroll" className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory h-full">
                 {featuredDresses.map((dress, index) => (
-                  <div key={dress.id} className="flex-shrink-0 w-80 snap-center">
+                  <div key={dress.id} className="flex-shrink-0 w-80 snap-center will-change-transform">
                     <DressCard 
                       id={dress.id}
                       name={dress.name}
@@ -141,7 +141,7 @@ export default function Index() {
                   const container = document.getElementById('featured-scroll');
                   if (container) container.scrollBy({ left: 350, behavior: 'smooth' });
                 }}
-                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-background/80 backdrop-blur-sm border-2 border-border rounded-full p-3 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-background"
+                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-background/80 border-2 border-border rounded-full p-3 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-background"
                 aria-label="Scroll right to view more dresses"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
