@@ -1,21 +1,21 @@
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
-import { z } from 'zod';
-import { Instagram, Facebook, MessageCircle, Phone, MapPin } from 'lucide-react';
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { z } from "zod";
+import { Instagram, Facebook, MessageCircle, Phone, MapPin } from "lucide-react";
 
 const emailSchema = z.string().email({ message: "Please enter a valid email address" });
 
 export default function Footer() {
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const validation = emailSchema.safeParse(email);
     if (!validation.success) {
       toast({
@@ -27,14 +27,12 @@ export default function Footer() {
     }
 
     setLoading(true);
-    
+
     try {
-      const { error } = await supabase
-        .from('subscribers')
-        .insert([{ email: email.trim() }]);
+      const { error } = await supabase.from("subscribers").insert([{ email: email.trim() }]);
 
       if (error) {
-        if (error.code === '23505') {
+        if (error.code === "23505") {
           toast({
             title: "Already subscribed",
             description: "You're already on our mailing list!",
@@ -47,7 +45,7 @@ export default function Footer() {
           title: "Successfully subscribed!",
           description: "You'll be notified about new dress arrivals.",
         });
-        setEmail('');
+        setEmail("");
       }
     } catch (error: any) {
       toast({
@@ -70,8 +68,7 @@ export default function Footer() {
             </h3>
             <p className="text-sm text-muted-foreground mb-4">by enaam dirani</p>
             <p className="text-muted-foreground mb-4">
-              Discover exquisite designer dresses for every special occasion. 
-              Your perfect dress awaits.
+              Discover exquisite designer dresses for every special occasion. Your perfect dress awaits.
             </p>
             <div className="flex gap-3">
               <a
@@ -84,7 +81,7 @@ export default function Footer() {
                 <Instagram className="w-5 h-5 text-primary group-hover:text-primary-foreground transition-colors" />
               </a>
               <a
-                href="https://facebook.com/EDAtelier"
+                href="https://facebook.com/ED.Atelier.byenaamdirani"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 rounded-full bg-primary/10 hover:bg-primary flex items-center justify-center transition-colors group"
@@ -151,7 +148,7 @@ export default function Footer() {
                 className="flex-1"
               />
               <Button type="submit" disabled={loading}>
-                {loading ? 'Subscribing...' : 'Subscribe'}
+                {loading ? "Subscribing..." : "Subscribe"}
               </Button>
             </form>
           </div>
