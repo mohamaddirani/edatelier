@@ -106,36 +106,21 @@ export default function AdminDashboard() {
   };
 
   const optimizeImageFile = async (file: File) => {
-    const sizeInMb = file.size / (1024 * 1024);
-
-    // Skip compression entirely for reasonably sized files to preserve fidelity
-    if (sizeInMb <= 8) {
-      return file;
-    }
-
     try {
       const optimizedBlob = await imageCompression(file, {
-        maxSizeMB: 12,
-        maxWidthOrHeight: 5000,
+        maxSizeMB: Math.min(6, Math.max(1.5, file.size / (1024 * 1024 * 2))),
+        maxWidthOrHeight: 3200,
         useWebWorker: true,
-        initialQuality: 0.93,
-        // Keep original encoding when possible so we don't force WebP everywhere
-        fileType: file.type?.startsWith('image/') ? (file.type as any) : undefined,
+        initialQuality: 0.9,
+        fileType: 'image/webp',
       });
 
       const optimizedFile = optimizedBlob instanceof File
         ? optimizedBlob
-        : new File([optimizedBlob], file.name, {
-            type: file.type || 'image/jpeg',
+        : new File([optimizedBlob], file.name.replace(/\.[^.]+$/, '') + '.webp', {
+            type: 'image/webp',
             lastModified: Date.now(),
           });
-
-      const compressionRatio = optimizedFile.size / file.size;
-
-      // If compression barely saved anything (or made it larger), stick with the original
-      if (compressionRatio > 0.85) {
-        return file;
-      }
 
       return optimizedFile;
     } catch (error) {
@@ -144,7 +129,7 @@ export default function AdminDashboard() {
         compressionWarningShown.current = true;
         toast({
           title: 'Optimization warning',
-          description: 'Could not compress at least one image. Uploading original files instead.',
+          description: 'Could not convert at least one image. Uploading the original file instead.',
         });
       }
       return file;
