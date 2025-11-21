@@ -115,12 +115,11 @@ export default function AdminDashboard() {
         fileType: 'image/webp',
       });
 
-      const optimizedFile = optimizedBlob instanceof File
-        ? optimizedBlob
-        : new File([optimizedBlob], file.name.replace(/\.[^.]+$/, '') + '.webp', {
-            type: 'image/webp',
-            lastModified: Date.now(),
-          });
+      const baseName = file.name.replace(/\.[^.]+$/, '') || 'dress-image';
+      const optimizedFile = new File([optimizedBlob], `${baseName}.webp`, {
+        type: 'image/webp',
+        lastModified: Date.now(),
+      });
 
       return optimizedFile;
     } catch (error) {
