@@ -40,6 +40,15 @@ interface Dress {
   category: string | null;
 }
 
+// Helper function to get item terminology based on category
+const getItemLabel = (category: string) => {
+  const dressCategories = ['dress', 'white-dress', 'classic-dress'];
+  if (dressCategories.includes(category)) {
+    return { singular: 'Dress', plural: 'Dresses' };
+  }
+  return { singular: 'Item', plural: 'Items' };
+};
+
 export default function AdminDashboard() {
   const navigate = useNavigate();
   const { user, isAdmin, loading: authLoading, signIn } = useAuth();
@@ -573,18 +582,18 @@ export default function AdminDashboard() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Add New Dress Form */}
+          {/* Add New Item Form */}
           <Card className="shadow-card">
             <CardHeader>
-              <CardTitle>{editingDressId ? 'Edit Dress' : 'Add New Dress'}</CardTitle>
+              <CardTitle>{editingDressId ? `Edit ${getItemLabel(formData.category).singular}` : `Add New ${getItemLabel(formData.category).singular}`}</CardTitle>
               <CardDescription>
-                {editingDressId ? 'Update dress information and images' : 'Upload a new dress to the collection'}
+                {editingDressId ? `Update ${getItemLabel(formData.category).singular.toLowerCase()} information and images` : `Upload a new ${getItemLabel(formData.category).singular.toLowerCase()} to the collection`}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <Input
-                  placeholder="Dress Name"
+                  placeholder={`${getItemLabel(formData.category).singular} Name`}
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   required
@@ -647,7 +656,7 @@ export default function AdminDashboard() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-2">
-                    Dress Images
+                    {getItemLabel(formData.category).singular} Images
                   </label>
                   
                   {/* Existing Images */}
@@ -756,7 +765,7 @@ export default function AdminDashboard() {
                 <div className="flex gap-2">
                   <Button type="submit" className="flex-1" disabled={loading}>
                     <Upload className="w-4 h-4 mr-2" />
-                    {loading ? (editingDressId ? 'Updating...' : 'Adding...') : (editingDressId ? 'Update Dress' : 'Add Dress')}
+                    {loading ? (editingDressId ? 'Updating...' : 'Adding...') : (editingDressId ? `Update ${getItemLabel(formData.category).singular}` : `Add ${getItemLabel(formData.category).singular}`)}
                   </Button>
                   {editingDressId && (
                     <Button type="button" variant="outline" onClick={handleCancelEdit} disabled={loading}>
@@ -768,17 +777,17 @@ export default function AdminDashboard() {
             </CardContent>
           </Card>
 
-          {/* Existing Dresses List */}
+          {/* Existing Items List */}
           <Card className="shadow-card">
             <CardHeader>
-              <CardTitle>Manage Dresses</CardTitle>
-              <CardDescription>View and manage existing dresses</CardDescription>
+              <CardTitle>Manage Items</CardTitle>
+              <CardDescription>View and manage existing items</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4 max-h-[600px] overflow-y-auto">
                 {dresses.length === 0 ? (
                   <p className="text-muted-foreground text-center py-8">
-                    No dresses added yet
+                    No items added yet
                   </p>
                 ) : (
                   dresses.map((dress) => (
