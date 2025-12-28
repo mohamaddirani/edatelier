@@ -592,6 +592,24 @@ export default function AdminDashboard() {
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-4">
+                {/* Category Selection First */}
+                <div>
+                  <label className="block text-sm font-medium mb-2">Category</label>
+                  <select
+                    value={formData.category}
+                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                    className="w-full h-10 px-3 rounded-md border border-input bg-background"
+                    required
+                  >
+                    <option value="dress">Dress</option>
+                    <option value="white-dress">White Dress</option>
+                    <option value="classic-dress">Classic Dress</option>
+                    <option value="clutch">Clutch</option>
+                    <option value="scarf">Scarf</option>
+                  </select>
+                </div>
+
+                {/* Rest of the form */}
                 <Input
                   placeholder={`${getItemLabel(formData.category).singular} Name`}
                   value={formData.name}
@@ -625,34 +643,17 @@ export default function AdminDashboard() {
                   value={formData.price_per_day}
                   onChange={(e) => setFormData({ ...formData, price_per_day: e.target.value })}
                 />
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Condition</label>
-                    <select
-                      value={formData.condition}
-                      onChange={(e) => setFormData({ ...formData, condition: e.target.value as 'new' | 'used' })}
-                      className="w-full h-10 px-3 rounded-md border border-input bg-background"
-                      required
-                    >
-                      <option value="new">New</option>
-                      <option value="used">Used</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Category</label>
-                    <select
-                      value={formData.category}
-                      onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                      className="w-full h-10 px-3 rounded-md border border-input bg-background"
-                      required
-                    >
-                      <option value="dress">Dress</option>
-                      <option value="white-dress">White Dress</option>
-                      <option value="classic-dress">Classic Dress</option>
-                      <option value="clutch">Clutch</option>
-                      <option value="scarf">Scarf</option>
-                    </select>
-                  </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">Condition</label>
+                  <select
+                    value={formData.condition}
+                    onChange={(e) => setFormData({ ...formData, condition: e.target.value as 'new' | 'used' })}
+                    className="w-full h-10 px-3 rounded-md border border-input bg-background"
+                    required
+                  >
+                    <option value="new">New</option>
+                    <option value="used">Used</option>
+                  </select>
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-2">
