@@ -14,6 +14,41 @@ export type Database = {
   }
   public: {
     Tables: {
+      abaya_stock: {
+        Row: {
+          created_at: string
+          dress_id: string
+          id: string
+          quantity: number
+          size: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          dress_id: string
+          id?: string
+          quantity?: number
+          size: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          dress_id?: string
+          id?: string
+          quantity?: number
+          size?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "abaya_stock_dress_id_fkey"
+            columns: ["dress_id"]
+            isOneToOne: false
+            referencedRelation: "dresses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       contact_messages: {
         Row: {
           created_at: string
@@ -85,6 +120,7 @@ export type Database = {
           is_available: boolean
           name: string
           price_per_day: number | null
+          purchase_price: number | null
           size: string | null
           slug: string
           updated_at: string
@@ -100,6 +136,7 @@ export type Database = {
           is_available?: boolean
           name: string
           price_per_day?: number | null
+          purchase_price?: number | null
           size?: string | null
           slug: string
           updated_at?: string
@@ -115,11 +152,68 @@ export type Database = {
           is_available?: boolean
           name?: string
           price_per_day?: number | null
+          purchase_price?: number | null
           size?: string | null
           slug?: string
           updated_at?: string
         }
         Relationships: []
+      }
+      orders: {
+        Row: {
+          created_at: string
+          customer_address: string
+          customer_email: string
+          customer_name: string
+          customer_phone: string
+          dress_id: string
+          id: string
+          notes: string | null
+          quantity: number
+          selected_size: string
+          status: Database["public"]["Enums"]["order_status"]
+          total_price: number | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          customer_address: string
+          customer_email: string
+          customer_name: string
+          customer_phone: string
+          dress_id: string
+          id?: string
+          notes?: string | null
+          quantity?: number
+          selected_size: string
+          status?: Database["public"]["Enums"]["order_status"]
+          total_price?: number | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          customer_address?: string
+          customer_email?: string
+          customer_name?: string
+          customer_phone?: string
+          dress_id?: string
+          id?: string
+          notes?: string | null
+          quantity?: number
+          selected_size?: string
+          status?: Database["public"]["Enums"]["order_status"]
+          total_price?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orders_dress_id_fkey"
+            columns: ["dress_id"]
+            isOneToOne: false
+            referencedRelation: "dresses"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -212,6 +306,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "user"
+      order_status: "pending" | "delivered" | "returned"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -340,6 +435,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "user"],
+      order_status: ["pending", "delivered", "returned"],
     },
   },
 } as const
