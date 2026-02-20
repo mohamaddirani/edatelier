@@ -8,7 +8,9 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Trash2, Upload, Pencil } from 'lucide-react';
+import { Trash2, Upload, Pencil, Package } from 'lucide-react';
+import AdminOrders from '@/components/AdminOrders';
+import AdminStockManager from '@/components/AdminStockManager';
 import { z } from 'zod';
 import imageCompression from 'browser-image-compression';
 
@@ -34,6 +36,7 @@ interface Dress {
   size: string;
   color: string;
   price_per_day: number;
+  purchase_price: number | null;
   image_url: string;
   is_available: boolean;
   condition: string | null;
@@ -45,6 +48,9 @@ const getItemLabel = (category: string) => {
   const dressCategories = ['dress', 'white-dress', 'classic-dress'];
   if (dressCategories.includes(category)) {
     return { singular: 'Dress', plural: 'Dresses' };
+  }
+  if (category === 'abaya') {
+    return { singular: 'Abaya', plural: 'Abayas' };
   }
   return { singular: 'Item', plural: 'Items' };
 };
@@ -67,12 +73,14 @@ export default function AdminDashboard() {
     display_order: number;
   }>>([]);
   const [imagesToDelete, setImagesToDelete] = useState<string[]>([]);
+  const [activeTab, setActiveTab] = useState<'items' | 'orders'>('items');
   const [formData, setFormData] = useState({
     name: '',
     description: '',
     size: '',
     color: '',
     price_per_day: '',
+    purchase_price: '',
     condition: 'new' as 'new' | 'used',
     category: 'dress',
   });
@@ -286,7 +294,8 @@ export default function AdminDashboard() {
           primaryImageUrl = newImageUrls[newImageIndex] || remainingExistingImages[0]?.image_url || '';
         }
 
-        // Update dress record
+        const purchasePriceValue = formData.purchase_price ? parseFloat(formData.purchase_price) : null;
+        
         const { error: dressError } = await supabase
           .from('dresses')
           .update({
@@ -295,6 +304,7 @@ export default function AdminDashboard() {
             size: validation.data.size,
             color: validation.data.color,
             price_per_day: validation.data.price_per_day,
+            purchase_price: purchasePriceValue,
             condition: validation.data.condition,
             category: validation.data.category,
             image_url: primaryImageUrl,
@@ -348,7 +358,8 @@ export default function AdminDashboard() {
         // Upload all images
         const imageUrls = await Promise.all(imageFiles.map(file => uploadImage(file)));
 
-        // Insert dress record
+        const newPurchasePrice = formData.purchase_price ? parseFloat(formData.purchase_price) : null;
+        
         const { data: dressData, error: dressError } = await supabase
           .from('dresses')
           .insert([{
@@ -357,6 +368,7 @@ export default function AdminDashboard() {
             size: validation.data.size,
             color: validation.data.color,
             price_per_day: validation.data.price_per_day,
+            purchase_price: newPurchasePrice,
             condition: validation.data.condition,
             category: validation.data.category,
             image_url: imageUrls[primaryImageIndex],
@@ -394,6 +406,7 @@ export default function AdminDashboard() {
         size: '',
         color: '',
         price_per_day: '',
+        purchase_price: '',
         condition: 'new',
         category: 'dress',
       });
@@ -422,6 +435,7 @@ export default function AdminDashboard() {
       size: dress.size || '',
       color: dress.color || '',
       price_per_day: dress.price_per_day?.toString() || '',
+      purchase_price: dress.purchase_price?.toString() || '',
       condition: (dress.condition as 'new' | 'used') || 'new',
       category: dress.category || 'dress',
     });
@@ -474,6 +488,7 @@ export default function AdminDashboard() {
       size: '',
       color: '',
       price_per_day: '',
+      purchase_price: '',
       condition: 'new',
       category: 'dress',
     });
@@ -581,6 +596,26 @@ export default function AdminDashboard() {
           <Button variant="outline" onClick={() => navigate('/')}>Return to Homepage</Button>
         </div>
 
+        {/* Tab Navigation */}
+        <div className="flex gap-2 mb-8">
+          <Button
+            variant={activeTab === 'items' ? 'default' : 'outline'}
+            onClick={() => setActiveTab('items')}
+          >
+            Manage Items
+          </Button>
+          <Button
+            variant={activeTab === 'orders' ? 'default' : 'outline'}
+            onClick={() => setActiveTab('orders')}
+          >
+            <Package className="w-4 h-4 mr-2" />
+            Orders
+          </Button>
+        </div>
+
+        {activeTab === 'orders' ? (
+          <AdminOrders />
+        ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Add New Item Form */}
           <Card className="shadow-card">
@@ -606,6 +641,7 @@ export default function AdminDashboard() {
                     <option value="classic-dress">Classic Dress</option>
                     <option value="clutch">Clutch</option>
                     <option value="scarf">Scarf</option>
+                    <option value="abaya">Abaya</option>
                   </select>
                 </div>
 
@@ -636,13 +672,23 @@ export default function AdminDashboard() {
                     required
                   />
                 </div>
-                <Input
-                  type="number"
-                  step="0.01"
-                  placeholder="Price per day (optional)"
-                  value={formData.price_per_day}
-                  onChange={(e) => setFormData({ ...formData, price_per_day: e.target.value })}
-                />
+                {formData.category === 'abaya' ? (
+                  <Input
+                    type="number"
+                    step="0.01"
+                    placeholder="Purchase Price (optional)"
+                    value={formData.purchase_price}
+                    onChange={(e) => setFormData({ ...formData, purchase_price: e.target.value })}
+                  />
+                ) : (
+                  <Input
+                    type="number"
+                    step="0.01"
+                    placeholder="Price per day (optional)"
+                    value={formData.price_per_day}
+                    onChange={(e) => setFormData({ ...formData, price_per_day: e.target.value })}
+                  />
+                )}
                 <div>
                   <label className="block text-sm font-medium mb-2">Condition</label>
                   <select
@@ -778,6 +824,19 @@ export default function AdminDashboard() {
             </CardContent>
           </Card>
 
+          {/* Stock Manager for Abayas */}
+          {editingDressId && formData.category === 'abaya' && (
+            <Card className="shadow-card lg:col-span-2">
+              <CardHeader>
+                <CardTitle>Abaya Stock Management</CardTitle>
+                <CardDescription>Manage stock per size for this abaya</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <AdminStockManager dressId={editingDressId} />
+              </CardContent>
+            </Card>
+          )}
+
           {/* Existing Items List */}
           <Card className="shadow-card">
             <CardHeader>
@@ -829,6 +888,7 @@ export default function AdminDashboard() {
             </CardContent>
           </Card>
         </div>
+        )}
       </main>
     </div>
   );
