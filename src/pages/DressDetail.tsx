@@ -8,6 +8,7 @@ import { ArrowLeft, ZoomIn } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import InteractiveBackground from '@/components/InteractiveBackground';
+import OrderForm from '@/components/OrderForm';
 
 interface DressImage {
   id: string;
@@ -21,10 +22,12 @@ interface Dress {
   name: string;
   description: string | null;
   price_per_day: number | null;
+  purchase_price: number | null;
   image_url: string | null;
   size: string | null;
   color: string | null;
   is_available: boolean;
+  category: string | null;
 }
 
 export default function DressDetail() {
@@ -37,6 +40,9 @@ export default function DressDetail() {
   const [zoomOpen, setZoomOpen] = useState(false);
   const [zoomPosition, setZoomPosition] = useState({ x: 50, y: 50 });
   const zoomImageRef = useRef<HTMLDivElement>(null);
+  const [availableSizes, setAvailableSizes] = useState<{ size: string; quantity: number }[]>([]);
+
+  const isAbaya = dress?.category === 'abaya';
 
   useEffect(() => {
     if (id) {
@@ -46,14 +52,12 @@ export default function DressDetail() {
 
   const fetchDress = async () => {
     try {
-      // First try to fetch by slug
       let { data, error } = await supabase
         .from('dresses')
         .select('*')
         .eq('slug', id)
         .maybeSingle();
 
-      // If not found by slug, try by UUID (backward compatibility)
       if (!data && !error) {
         const result = await supabase
           .from('dresses')
@@ -69,12 +73,24 @@ export default function DressDetail() {
       if (data) {
         setDress(data);
         fetchImages(data.id);
+        if (data.category === 'abaya') {
+          fetchStock(data.id);
+        }
       }
     } catch (error) {
       console.error('Error fetching dress:', error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const fetchStock = async (dressId: string) => {
+    const { data } = await supabase
+      .from('abaya_stock')
+      .select('size, quantity')
+      .eq('dress_id', dressId)
+      .order('size');
+    if (data) setAvailableSizes(data);
   };
 
   const fetchImages = async (dressId: string) => {
@@ -88,7 +104,6 @@ export default function DressDetail() {
       if (error) throw error;
 
       if (!data || data.length === 0) {
-        // Fallback to legacy image
         const { data: dressData } = await supabase
           .from('dresses')
           .select('image_url')
@@ -126,7 +141,7 @@ export default function DressDetail() {
   if (!dress) {
     return (
       <main className="min-h-screen flex flex-col items-center justify-center">
-        <p className="text-muted-foreground mb-4">Dress not found</p>
+        <p className="text-muted-foreground mb-4">Item not found</p>
         <Button onClick={() => navigate('/')}>Go Back</Button>
       </main>
     );
@@ -201,7 +216,7 @@ export default function DressDetail() {
             )}
           </div>
 
-          {/* Dress Details */}
+          {/* Details */}
           <div>
             {!dress.is_available && (
               <Badge variant="destructive" className="mb-4">
@@ -217,7 +232,7 @@ export default function DressDetail() {
             )}
 
             <div className="space-y-4 mb-6">
-              {dress.size && (
+              {dress.size && !isAbaya && (
                 <div>
                   <span className="font-semibold">Size: </span>
                   <Badge variant="outline">{dress.size}</Badge>
@@ -231,25 +246,44 @@ export default function DressDetail() {
               )}
             </div>
 
-            {dress.price_per_day && dress.price_per_day > 0 ? (
-              <div className="mb-6">
-                <p className="text-4xl font-bold text-primary">
-                  ${dress.price_per_day}
-                  <span className="text-lg text-muted-foreground">/day</span>
-                </p>
-              </div>
-            ) : null}
-
-            <Button 
-              size="lg" 
-              className="w-full"
-              onClick={() => {
-                const message = `Hello, I'm interested in renting: ${dress.name}`;
-                window.open(`https://api.whatsapp.com/send?phone=9613836748&text=${encodeURIComponent(message)}`, '_blank');
-              }}
-            >
-              Contact for Rental
-            </Button>
+            {isAbaya ? (
+              <>
+                {dress.purchase_price && dress.purchase_price > 0 && (
+                  <div className="mb-6">
+                    <p className="text-4xl font-bold text-primary">
+                      ${dress.purchase_price}
+                    </p>
+                  </div>
+                )}
+                <OrderForm
+                  dressId={dress.id}
+                  dressName={dress.name}
+                  purchasePrice={dress.purchase_price}
+                  availableSizes={availableSizes}
+                />
+              </>
+            ) : (
+              <>
+                {dress.price_per_day && dress.price_per_day > 0 ? (
+                  <div className="mb-6">
+                    <p className="text-4xl font-bold text-primary">
+                      ${dress.price_per_day}
+                      <span className="text-lg text-muted-foreground">/day</span>
+                    </p>
+                  </div>
+                ) : null}
+                <Button 
+                  size="lg" 
+                  className="w-full"
+                  onClick={() => {
+                    const message = `Hello, I'm interested in renting: ${dress.name}`;
+                    window.open(`https://api.whatsapp.com/send?phone=9613836748&text=${encodeURIComponent(message)}`, '_blank');
+                  }}
+                >
+                  Contact for Rental
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </main>

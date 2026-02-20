@@ -36,6 +36,7 @@ const categories = [
   { id: 'all', label: 'All', emptyLabel: 'dresses', type: 'dress' },
   { id: 'white-dress', label: 'White Dress', emptyLabel: 'White Dresses', type: 'dress' },
   { id: 'classic-dress', label: 'Classic Dress', emptyLabel: 'Classic Dresses', type: 'dress' },
+  { id: 'abaya', label: 'Abaya', emptyLabel: 'Abayas', type: 'abaya' },
   { id: 'clutch', label: 'Clutch', emptyLabel: 'Clutches', type: 'accessory' },
   { id: 'scarf', label: 'Scarf', emptyLabel: 'Scarves', type: 'accessory' },
 ];
