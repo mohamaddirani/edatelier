@@ -20,6 +20,7 @@ interface DressImage {
 interface Dress {
   id: string;
   name: string;
+  slug: string;
   description: string | null;
   price_per_day: number | null;
   purchase_price: number | null;
@@ -248,7 +249,8 @@ export default function DressDetail() {
                   size="lg" 
                   className="w-full"
                   onClick={() => {
-                    const message = `Hello, I'm interested in buying this Abaya: ${dress.name}`;
+                    const dressUrl = `${window.location.origin}/dress/${dress.slug || dress.id}`;
+                    const message = `Hello, I'm interested in buying this Abaya: ${dress.name}\n${dressUrl}`;
                     window.open(`https://api.whatsapp.com/send?phone=9613836748&text=${encodeURIComponent(message)}`, '_blank');
                   }}
                 >

@@ -10,7 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useToast } from '@/hooks/use-toast';
 import { Trash2, Upload, Pencil, Package } from 'lucide-react';
 import AdminOrders from '@/components/AdminOrders';
-import AdminStockManager from '@/components/AdminStockManager';
+
 import { z } from 'zod';
 import imageCompression from 'browser-image-compression';
 
@@ -22,11 +22,12 @@ const adminLoginSchema = z.object({
 const dressSchema = z.object({
   name: z.string().trim().min(1, { message: "Name is required" }).max(100),
   description: z.string().trim().max(500),
-  size: z.string().trim().min(1, { message: "Size is required" }),
+  size: z.string().trim().max(50).optional(),
   color: z.string().trim().min(1, { message: "Color is required" }),
   price_per_day: z.number().min(0, { message: "Price must be positive" }).optional(),
   condition: z.enum(['new', 'used'], { message: "Please select a condition" }),
   category: z.string().trim().min(1, { message: "Category is required" }),
+  stock: z.number().int().min(0).optional(),
 });
 
 interface Dress {
@@ -81,6 +82,7 @@ export default function AdminDashboard() {
     color: '',
     price_per_day: '',
     purchase_price: '',
+    stock: '',
     condition: 'new' as 'new' | 'used',
     category: 'dress',
   });
@@ -214,17 +216,30 @@ export default function AdminDashboard() {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
+    const isAbayaCategory = formData.category === 'abaya';
     const priceValue = formData.price_per_day ? parseFloat(formData.price_per_day) : undefined;
+    const stockValue = formData.stock ? parseInt(formData.stock) : undefined;
     
     const validation = dressSchema.safeParse({
       ...formData,
+      size: isAbayaCategory ? 'One Size' : formData.size,
       price_per_day: priceValue,
+      stock: stockValue,
     });
 
     if (!validation.success) {
       toast({
         title: "Validation Error",
         description: validation.error.errors[0].message,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!isAbayaCategory && !validation.data.size) {
+      toast({
+        title: "Validation Error",
+        description: "Size is required",
         variant: "destructive",
       });
       return;
@@ -301,7 +316,7 @@ export default function AdminDashboard() {
           .update({
             name: validation.data.name,
             description: validation.data.description,
-            size: validation.data.size,
+            size: validation.data.size || 'One Size',
             color: validation.data.color,
             price_per_day: validation.data.price_per_day,
             purchase_price: purchasePriceValue,
@@ -311,6 +326,23 @@ export default function AdminDashboard() {
             ...slugUpdate,
           })
           .eq('id', editingDressId);
+
+        // Update stock for abayas
+        if (isAbayaCategory && stockValue !== undefined) {
+          // Upsert stock entry (single "One Size" entry)
+          const { data: existingStock } = await supabase
+            .from('abaya_stock')
+            .select('id')
+            .eq('dress_id', editingDressId)
+            .eq('size', 'One Size')
+            .maybeSingle();
+
+          if (existingStock) {
+            await supabase.from('abaya_stock').update({ quantity: stockValue }).eq('id', existingStock.id);
+          } else {
+            await supabase.from('abaya_stock').insert({ dress_id: editingDressId, size: 'One Size', quantity: stockValue });
+          }
+        }
 
         if (dressError) throw dressError;
 
@@ -365,7 +397,7 @@ export default function AdminDashboard() {
           .insert([{
             name: validation.data.name,
             description: validation.data.description,
-            size: validation.data.size,
+            size: validation.data.size || 'One Size',
             color: validation.data.color,
             price_per_day: validation.data.price_per_day,
             purchase_price: newPurchasePrice,
@@ -393,6 +425,15 @@ export default function AdminDashboard() {
 
         if (imagesError) throw imagesError;
 
+        // Create stock entry for abayas
+        if (isAbayaCategory && stockValue !== undefined) {
+          await supabase.from('abaya_stock').insert({
+            dress_id: dressData.id,
+            size: 'One Size',
+            quantity: stockValue,
+          });
+        }
+
         toast({
           title: "Success!",
           description: "Dress added successfully",
@@ -407,6 +448,7 @@ export default function AdminDashboard() {
         color: '',
         price_per_day: '',
         purchase_price: '',
+        stock: '',
         condition: 'new',
         category: 'dress',
       });
@@ -436,9 +478,23 @@ export default function AdminDashboard() {
       color: dress.color || '',
       price_per_day: dress.price_per_day?.toString() || '',
       purchase_price: dress.purchase_price?.toString() || '',
+      stock: '',
       condition: (dress.condition as 'new' | 'used') || 'new',
       category: dress.category || 'dress',
     });
+
+    // Fetch stock for abayas
+    if (dress.category === 'abaya') {
+      const { data: stockData } = await supabase
+        .from('abaya_stock')
+        .select('quantity')
+        .eq('dress_id', dress.id)
+        .eq('size', 'One Size')
+        .maybeSingle();
+      if (stockData) {
+        setFormData(prev => ({ ...prev, stock: stockData.quantity.toString() }));
+      }
+    }
 
     // Fetch existing images
     try {
@@ -489,6 +545,7 @@ export default function AdminDashboard() {
       color: '',
       price_per_day: '',
       purchase_price: '',
+      stock: '',
       condition: 'new',
       category: 'dress',
     });
@@ -658,20 +715,38 @@ export default function AdminDashboard() {
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   rows={3}
                 />
-                <div className="grid grid-cols-2 gap-4">
-                  <Input
-                    placeholder="Size (e.g., S, M, L)"
-                    value={formData.size}
-                    onChange={(e) => setFormData({ ...formData, size: e.target.value })}
-                    required
-                  />
-                  <Input
-                    placeholder="Color"
-                    value={formData.color}
-                    onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-                    required
-                  />
-                </div>
+                {formData.category !== 'abaya' ? (
+                  <div className="grid grid-cols-2 gap-4">
+                    <Input
+                      placeholder="Size (e.g., S, M, L)"
+                      value={formData.size}
+                      onChange={(e) => setFormData({ ...formData, size: e.target.value })}
+                      required
+                    />
+                    <Input
+                      placeholder="Color"
+                      value={formData.color}
+                      onChange={(e) => setFormData({ ...formData, color: e.target.value })}
+                      required
+                    />
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 gap-4">
+                    <Input
+                      placeholder="Color"
+                      value={formData.color}
+                      onChange={(e) => setFormData({ ...formData, color: e.target.value })}
+                      required
+                    />
+                    <Input
+                      type="number"
+                      min="0"
+                      placeholder="Stock Quantity"
+                      value={formData.stock}
+                      onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
+                    />
+                  </div>
+                )}
                 {formData.category === 'abaya' ? (
                   <Input
                     type="number"
@@ -824,18 +899,7 @@ export default function AdminDashboard() {
             </CardContent>
           </Card>
 
-          {/* Stock Manager for Abayas */}
-          {editingDressId && formData.category === 'abaya' && (
-            <Card className="shadow-card lg:col-span-2">
-              <CardHeader>
-                <CardTitle>Abaya Stock Management</CardTitle>
-                <CardDescription>Manage stock per size for this abaya</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <AdminStockManager dressId={editingDressId} />
-              </CardContent>
-            </Card>
-          )}
+          {/* Stock Manager removed - stock is managed inline for abayas */}
 
           {/* Existing Items List */}
           <Card className="shadow-card">
