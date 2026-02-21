@@ -8,7 +8,7 @@ import { ArrowLeft, ZoomIn } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import InteractiveBackground from '@/components/InteractiveBackground';
-import OrderForm from '@/components/OrderForm';
+
 
 interface DressImage {
   id: string;
@@ -40,7 +40,7 @@ export default function DressDetail() {
   const [zoomOpen, setZoomOpen] = useState(false);
   const [zoomPosition, setZoomPosition] = useState({ x: 50, y: 50 });
   const zoomImageRef = useRef<HTMLDivElement>(null);
-  const [availableSizes, setAvailableSizes] = useState<{ size: string; quantity: number }[]>([]);
+  
 
   const isAbaya = dress?.category === 'abaya';
 
@@ -73,9 +73,6 @@ export default function DressDetail() {
       if (data) {
         setDress(data);
         fetchImages(data.id);
-        if (data.category === 'abaya') {
-          fetchStock(data.id);
-        }
       }
     } catch (error) {
       console.error('Error fetching dress:', error);
@@ -84,14 +81,6 @@ export default function DressDetail() {
     }
   };
 
-  const fetchStock = async (dressId: string) => {
-    const { data } = await supabase
-      .from('abaya_stock')
-      .select('size, quantity')
-      .eq('dress_id', dressId)
-      .order('size');
-    if (data) setAvailableSizes(data);
-  };
 
   const fetchImages = async (dressId: string) => {
     try {
@@ -255,12 +244,16 @@ export default function DressDetail() {
                     </p>
                   </div>
                 )}
-                <OrderForm
-                  dressId={dress.id}
-                  dressName={dress.name}
-                  purchasePrice={dress.purchase_price}
-                  availableSizes={availableSizes}
-                />
+                <Button 
+                  size="lg" 
+                  className="w-full"
+                  onClick={() => {
+                    const message = `Hello, I'm interested in buying this Abaya: ${dress.name}`;
+                    window.open(`https://api.whatsapp.com/send?phone=9613836748&text=${encodeURIComponent(message)}`, '_blank');
+                  }}
+                >
+                  Buy via WhatsApp
+                </Button>
               </>
             ) : (
               <>
