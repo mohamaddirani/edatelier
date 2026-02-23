@@ -234,15 +234,15 @@ export default function Shop() {
             </div>
 
           {/* Filters Panel */}
-            <div className={`bg-background rounded-xl border-2 border-border p-6 mb-6 shadow-sm ${showFilters ? 'block' : 'hidden lg:block'}`}>
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-bold">Filters</h3>
+            <div className={`bg-background rounded-xl border-2 border-border p-4 mb-6 shadow-sm ${showFilters ? 'block' : 'hidden lg:block'}`}>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-base font-bold">Filters</h3>
                 {hasActiveFilters && (
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={clearFilters}
-                    className="text-xs h-8"
+                    className="text-xs h-7"
                   >
                     <X className="w-3 h-3 mr-1" />
                     Clear All
@@ -250,32 +250,33 @@ export default function Shop() {
                 )}
               </div>
 
-              {/* Category Pills */}
-              <div className="mb-6">
-                <label className="text-sm font-semibold mb-3 block">Category</label>
-                <div className="flex flex-wrap gap-2">
-                  {categories.map((category) => (
-                    <button
-                      key={category.id}
-                      onClick={() => setSelectedCategory(category.id)}
-                      className={`px-6 py-2.5 rounded-lg text-sm font-medium transition-all border-2 ${
-                        selectedCategory === category.id
-                          ? 'bg-primary text-primary-foreground border-primary'
-                          : 'bg-background text-foreground border-border hover:border-primary'
-                      }`}
-                    >
-                      {category.label}
-                    </button>
-                  ))}
+              {/* All filters in a single row on desktop */}
+              <div className="flex flex-col lg:flex-row lg:items-end gap-4">
+                {/* Category Pills */}
+                <div className="flex-1">
+                  <label className="text-xs font-semibold mb-2 block text-muted-foreground">Category</label>
+                  <div className="flex flex-wrap gap-1.5">
+                    {categories.map((category) => (
+                      <button
+                        key={category.id}
+                        onClick={() => setSelectedCategory(category.id)}
+                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all border ${
+                          selectedCategory === category.id
+                            ? 'bg-primary text-primary-foreground border-primary'
+                            : 'bg-background text-foreground border-border hover:border-primary/50'
+                        }`}
+                      >
+                        {category.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
 
-              <div className="space-y-6">
                 {/* Color Filter */}
-                <div>
-                  <label className="text-sm font-semibold mb-3 block">Color</label>
+                <div className="w-full lg:w-48">
+                  <label className="text-xs font-semibold mb-2 block text-muted-foreground">Color</label>
                   <Select value={selectedColor} onValueChange={setSelectedColor}>
-                    <SelectTrigger className="w-full h-12 bg-background border-2 border-border hover:border-primary transition-colors">
+                    <SelectTrigger className="w-full h-10 bg-background border border-border hover:border-primary/50 transition-colors">
                       <SelectValue placeholder="All Colors" />
                     </SelectTrigger>
                     <SelectContent>
@@ -290,17 +291,17 @@ export default function Shop() {
                 </div>
 
                 {/* Condition Filter */}
-                <div>
-                  <label className="text-sm font-semibold mb-3 block">Condition</label>
-                  <div className="flex gap-3">
+                <div className="w-full lg:w-48">
+                  <label className="text-xs font-semibold mb-2 block text-muted-foreground">Condition</label>
+                  <div className="flex gap-2">
                     <button
                       onClick={() =>
                         setSelectedCondition(selectedCondition === 'new' ? null : 'new')
                       }
-                      className={`flex-1 px-4 py-3 rounded-lg text-sm font-medium transition-all border-2 ${
+                      className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-all border ${
                         selectedCondition === 'new'
                           ? 'bg-primary text-primary-foreground border-primary'
-                          : 'bg-background text-foreground border-border hover:border-primary'
+                          : 'bg-background text-foreground border-border hover:border-primary/50'
                       }`}
                     >
                       New
@@ -309,10 +310,10 @@ export default function Shop() {
                       onClick={() =>
                         setSelectedCondition(selectedCondition === 'used' ? null : 'used')
                       }
-                      className={`flex-1 px-4 py-3 rounded-lg text-sm font-medium transition-all border-2 ${
+                      className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-all border ${
                         selectedCondition === 'used'
                           ? 'bg-primary text-primary-foreground border-primary'
-                          : 'bg-background text-foreground border-border hover:border-primary'
+                          : 'bg-background text-foreground border-border hover:border-primary/50'
                       }`}
                     >
                       Used
@@ -378,6 +379,8 @@ export default function Shop() {
                         name={dress.name}
                         image_url={dress.image_url}
                         is_available={dress.is_available}
+                        color={dress.color}
+                        category={dress.category}
                       />
                     </div>
                   ))}

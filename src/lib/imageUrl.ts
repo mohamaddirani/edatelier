@@ -3,9 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 export type TransformOptions = {
   width?: number;
   height?: number;
-  quality?: number; // 1-100
-  // Supabase will auto-select efficient formats (WebP/AVIF) if you omit format.
-  // Use format: 'origin' to preserve original file format.
+  quality?: number;
   format?: 'origin';
   resize?: 'cover' | 'contain' | 'fill';
   [key: string]: unknown;
@@ -13,8 +11,6 @@ export type TransformOptions = {
 
 /**
  * Request a transformed public URL from Supabase.
- * This uses the v2 API form: getPublicUrl(path, { transform })
- * and returns data.publicUrl.
  */
 export function getTransformedPublicUrl(bucket: string, path: string, transform?: TransformOptions) {
   const { data } = supabase.storage.from(bucket).getPublicUrl(path, transform ? { transform: transform as any } : undefined);
@@ -23,7 +19,6 @@ export function getTransformedPublicUrl(bucket: string, path: string, transform?
 
 /**
  * Create a signed URL for a private object with optional transform baked in.
- * For private buckets, transforms must be provided when creating the signed URL.
  */
 export async function getTransformedSignedUrl(
   bucket: string,
@@ -35,4 +30,34 @@ export async function getTransformedSignedUrl(
   const { data, error } = await supabase.storage.from(bucket).createSignedUrl(path, expiresIn, options as any);
   if (error) throw error;
   return data.signedUrl;
+}
+
+const STORAGE_BASE = `https://krjafgbzeyfubpnqarmi.supabase.co/storage/v1/object/public/dress-images/`;
+
+/**
+ * Get optimized image URL by appending Supabase render transform query params.
+ * Falls back to original URL if not a Supabase storage URL.
+ */
+export function getOptimizedImageUrl(
+  url: string,
+  options: { width?: number; height?: number; quality?: number } = {}
+): string {
+  if (!url || !url.includes('supabase.co/storage/v1/object/public/')) {
+    return url;
+  }
+  
+  const { width, height, quality = 75 } = options;
+  const params = new URLSearchParams();
+  if (width) params.set('width', String(width));
+  if (height) params.set('height', String(height));
+  params.set('quality', String(quality));
+  params.set('resize', 'cover');
+  
+  // Use Supabase render endpoint
+  const renderUrl = url.replace(
+    '/storage/v1/object/public/',
+    '/storage/v1/render/image/public/'
+  );
+  
+  return `${renderUrl}?${params.toString()}`;
 }

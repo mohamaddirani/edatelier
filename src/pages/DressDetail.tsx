@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { getOptimizedImageUrl } from '@/lib/imageUrl';
 import { supabase } from '@/integrations/supabase/client';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -164,7 +165,7 @@ export default function DressDetail() {
               onClick={() => setZoomOpen(true)}
             >
               <img
-                src={selectedImage}
+                src={getOptimizedImageUrl(selectedImage, { width: 800, quality: 85 })}
                 alt={dress.name}
                 width="600"
                 height="800"
@@ -187,7 +188,7 @@ export default function DressDetail() {
                     }`}
                   >
                     <img
-                      src={image.image_url}
+                      src={getOptimizedImageUrl(image.image_url, { width: 200, quality: 70 })}
                       alt={`${dress.name} thumbnail`}
                       width="150"
                       height="200"

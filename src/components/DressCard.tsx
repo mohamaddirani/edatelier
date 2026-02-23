@@ -2,6 +2,7 @@ import { useEffect, useState, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { getOptimizedImageUrl } from '@/lib/imageUrl';
 
 interface DressCardProps {
   id: string;
@@ -10,6 +11,8 @@ interface DressCardProps {
   image_url: string;
   is_available: boolean;
   priority?: boolean;
+  color?: string;
+  category?: string | null;
 }
 
 export default function DressCard({ 
@@ -18,7 +21,9 @@ export default function DressCard({
   name, 
   image_url, 
   is_available,
-  priority = false
+  priority = false,
+  color,
+  category,
 }: DressCardProps) {
   const navigate = useNavigate();
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -26,16 +31,18 @@ export default function DressCard({
   const imgRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (priority) {
-      setShouldLoad(true);
-    }
+    if (priority) setShouldLoad(true);
   }, [priority]);
 
   useEffect(() => {
     setImageLoaded(false);
   }, [image_url]);
 
-  const resolvedSrc = useMemo(() => image_url || '', [image_url]);
+  // Serve a 640px wide image for cards instead of full resolution
+  const optimizedSrc = useMemo(
+    () => getOptimizedImageUrl(image_url || '', { width: 640, quality: 75 }),
+    [image_url]
+  );
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -47,41 +54,45 @@ export default function DressCard({
           }
         });
       },
-      {
-        rootMargin: '120px',
-      }
+      { rootMargin: '200px' }
     );
 
-    if (imgRef.current) {
-      observer.observe(imgRef.current);
-    }
-
+    if (imgRef.current) observer.observe(imgRef.current);
     return () => observer.disconnect();
   }, []);
 
+  const categoryLabel = category === 'abaya' ? 'Abaya' 
+    : category === 'clutch' ? 'Clutch' 
+    : category === 'scarf' ? 'Scarf' 
+    : null;
+
   return (
     <Card 
-      className="overflow-hidden group hover:shadow-elegant transition-shadow duration-300 cursor-pointer"
+      className="overflow-hidden group hover:shadow-elegant transition-all duration-300 cursor-pointer border-border/50 hover:border-primary/30"
       onClick={() => navigate(`/dress/${slug || id}`)}
     >
       <div className="relative" ref={imgRef}>
-        <div className="w-full h-[421px] overflow-hidden bg-muted relative">
+        <div className="w-full aspect-[3/4] overflow-hidden bg-muted relative">
           {shouldLoad ? (
             <>
+              {/* Shimmer placeholder */}
               <div
-                className={`absolute inset-0 bg-muted transition-opacity duration-300 ${
+                className={`absolute inset-0 transition-opacity duration-500 ${
                   imageLoaded ? 'opacity-0' : 'opacity-100'
                 }`}
-              />
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-muted via-muted-foreground/5 to-muted animate-pulse" />
+              </div>
               <img
-                src={resolvedSrc}
+                src={optimizedSrc}
                 alt={name}
                 loading={priority ? "eager" : "lazy"}
                 decoding="async"
-                width={316}
-                height={421}
+                fetchPriority={priority ? "high" : undefined}
                 onLoad={() => setImageLoaded(true)}
-                className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                className={`absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out ${
+                  imageLoaded ? 'opacity-100' : 'opacity-0'
+                }`}
               />
             </>
           ) : (
@@ -89,13 +100,21 @@ export default function DressCard({
           )}
         </div>
         {!is_available && (
-          <Badge className="absolute top-4 right-4 bg-destructive z-10">
+          <Badge className="absolute top-3 right-3 bg-destructive/90 backdrop-blur-sm z-10">
             Unavailable
           </Badge>
         )}
+        {categoryLabel && (
+          <Badge variant="outline" className="absolute top-3 left-3 bg-background/80 backdrop-blur-sm z-10 text-xs">
+            {categoryLabel}
+          </Badge>
+        )}
       </div>
-      <div className="p-4 h-[60px] flex items-center justify-center">
-        <h3 className="font-semibold text-lg text-center line-clamp-2">{name}</h3>
+      <div className="p-4 space-y-1">
+        <h3 className="font-semibold text-base text-center line-clamp-1">{name}</h3>
+        {color && (
+          <p className="text-xs text-muted-foreground text-center">{color}</p>
+        )}
       </div>
     </Card>
   );
