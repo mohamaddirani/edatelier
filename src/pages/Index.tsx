@@ -22,6 +22,7 @@ interface Dress {
   is_available: boolean;
   created_at: string;
   slug: string;
+  category: string | null;
 }
 
 export default function Index() {
@@ -133,6 +134,8 @@ export default function Index() {
                       name={dress.name}
                       image_url={dress.image_url}
                       is_available={dress.is_available}
+                      color={dress.color}
+                      category={dress.category}
                       priority={index < 3}
                     />
                   </div>
