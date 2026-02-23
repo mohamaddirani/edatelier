@@ -217,12 +217,13 @@ export default function AdminDashboard() {
     e.preventDefault();
     
     const isAbayaCategory = formData.category === 'abaya';
+    const noSizeCategory = ['abaya', 'clutch', 'scarf'].includes(formData.category);
     const priceValue = formData.price_per_day ? parseFloat(formData.price_per_day) : undefined;
     const stockValue = formData.stock ? parseInt(formData.stock) : undefined;
     
     const validation = dressSchema.safeParse({
       ...formData,
-      size: isAbayaCategory ? 'One Size' : formData.size,
+      size: noSizeCategory ? 'One Size' : formData.size,
       price_per_day: priceValue,
       stock: stockValue,
     });
@@ -236,7 +237,8 @@ export default function AdminDashboard() {
       return;
     }
 
-    if (!isAbayaCategory && !validation.data.size) {
+    const noSizeCategories = ['abaya', 'clutch', 'scarf'];
+    if (!noSizeCategories.includes(formData.category) && !validation.data.size) {
       toast({
         title: "Validation Error",
         description: "Size is required",
@@ -715,7 +717,26 @@ export default function AdminDashboard() {
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   rows={3}
                 />
-                {formData.category !== 'abaya' ? (
+                {/* Size & Color row - hide size for abaya/clutch/scarf */}
+                {['abaya', 'clutch', 'scarf'].includes(formData.category) ? (
+                  <div className="grid grid-cols-2 gap-4">
+                    <Input
+                      placeholder="Color"
+                      value={formData.color}
+                      onChange={(e) => setFormData({ ...formData, color: e.target.value })}
+                      required
+                    />
+                    {formData.category === 'abaya' && (
+                      <Input
+                        type="number"
+                        min="0"
+                        placeholder="Stock Quantity"
+                        value={formData.stock}
+                        onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
+                      />
+                    )}
+                  </div>
+                ) : (
                   <div className="grid grid-cols-2 gap-4">
                     <Input
                       placeholder="Size (e.g., S, M, L)"
@@ -730,24 +751,9 @@ export default function AdminDashboard() {
                       required
                     />
                   </div>
-                ) : (
-                  <div className="grid grid-cols-2 gap-4">
-                    <Input
-                      placeholder="Color"
-                      value={formData.color}
-                      onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-                      required
-                    />
-                    <Input
-                      type="number"
-                      min="0"
-                      placeholder="Stock Quantity"
-                      value={formData.stock}
-                      onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
-                    />
-                  </div>
                 )}
-                {formData.category === 'abaya' ? (
+                {/* Price field - purchase price for abaya/scarf, price per day for others */}
+                {['abaya', 'scarf'].includes(formData.category) ? (
                   <Input
                     type="number"
                     step="0.01"
