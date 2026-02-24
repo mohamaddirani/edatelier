@@ -165,7 +165,7 @@ export default function DressDetail() {
               onClick={() => setZoomOpen(true)}
             >
               <img
-                src={getOptimizedImageUrl(selectedImage, { width: 800, quality: 85 })}
+                src={getOptimizedImageUrl(selectedImage, { width: 1200, quality: 90 })}
                 alt={dress.name}
                 width="600"
                 height="800"
@@ -188,7 +188,7 @@ export default function DressDetail() {
                     }`}
                   >
                     <img
-                      src={getOptimizedImageUrl(image.image_url, { width: 200, quality: 70 })}
+                      src={getOptimizedImageUrl(image.image_url, { width: 300, quality: 80 })}
                       alt={`${dress.name} thumbnail`}
                       width="150"
                       height="200"

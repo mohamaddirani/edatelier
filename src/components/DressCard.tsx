@@ -40,7 +40,7 @@ export default function DressCard({
 
   // Serve a 640px wide image for cards instead of full resolution
   const optimizedSrc = useMemo(
-    () => getOptimizedImageUrl(image_url || '', { width: 640, quality: 75 }),
+    () => getOptimizedImageUrl(image_url || '', { width: 1024, quality: 85 }),
     [image_url]
   );
 
